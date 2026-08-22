@@ -397,3 +397,17 @@ footer strong { color: #ddd; margin-right: 7px; }
   white-space: nowrap;
   letter-spacing: .01em;
 }
+
+
+/* AUTO ONLINE REFRESH STATUS V1 */
+#dataStatus[data-online-mode="loading"] {
+  opacity: .68;
+}
+
+#dataStatus[data-online-mode="ok"] {
+  border-color: rgba(114, 207, 151, .25);
+}
+
+#dataStatus[data-online-mode="error"] {
+  opacity: .72;
+}

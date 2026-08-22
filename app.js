@@ -588,6 +588,308 @@ function matchCard(m) {
   </article>`;
 }
 
+
+/* AUTO ONLINE REFRESH V1 */
+const SPORTSDB_TEAM_ID = '134108';
+const SPORTSDB_LEAGUE_ID = '4344';
+const SPORTSDB_SEASON = '2026-2027';
+const SPORTSDB_BASE = 'https://www.thesportsdb.com/api/v1/json/123';
+const ONLINE_CACHE_KEY = 'benfica-match-center-online-v1';
+const ONLINE_TABLE_CACHE_KEY = 'benfica-match-center-table-v1';
+
+function onlineNormalize(value='') {
+  return String(value)
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,' ')
+    .trim();
+}
+
+function canonicalTeamName(name='') {
+  const n = onlineNormalize(name);
+  const aliases = new Map([
+    ['benfica', BENFICA],
+    ['sl benfica', BENFICA],
+    ['sport lisboa e benfica', BENFICA],
+    ['academico de viseu', 'Académico de Viseu'],
+    ['casa pia', 'Casa Pia'],
+    ['casa pia ac', 'Casa Pia'],
+    ['moreirense', 'Moreirense'],
+    ['moreirense fc', 'Moreirense'],
+    ['estoril', 'Estoril'],
+    ['estoril praia', 'Estoril'],
+    ['gd estoril praia', 'Estoril'],
+    ['maritimo', 'Marítimo'],
+    ['cs maritimo', 'Marítimo'],
+    ['gil vicente', 'Gil Vicente'],
+    ['gil vicente fc', 'Gil Vicente'],
+    ['fc porto', 'FC Porto'],
+    ['porto', 'FC Porto'],
+    ['vitoria sc', 'Vitória SC'],
+    ['vitoria de guimaraes', 'Vitória SC'],
+    ['santa clara', 'Santa Clara'],
+    ['cd santa clara', 'Santa Clara'],
+    ['alverca', 'Alverca'],
+    ['fc alverca', 'Alverca'],
+    ['estrela amadora', 'Estrela Amadora'],
+    ['estrela da amadora', 'Estrela Amadora'],
+    ['cf estrela amadora', 'Estrela Amadora'],
+    ['famalicao', 'Famalicão'],
+    ['fc famalicao', 'Famalicão'],
+    ['nacional', 'Nacional'],
+    ['cd nacional', 'Nacional'],
+    ['nacional da madeira', 'Nacional'],
+    ['sc braga', 'SC Braga'],
+    ['braga', 'SC Braga'],
+    ['rio ave', 'Rio Ave'],
+    ['rio ave fc', 'Rio Ave'],
+    ['sporting cp', 'Sporting CP'],
+    ['sporting', 'Sporting CP'],
+    ['arouca', 'Arouca'],
+    ['fc arouca', 'Arouca'],
+    ['st gallen', 'St. Gallen'],
+    ['heart of midlothian', 'Heart of Midlothian'],
+    ['hearts', 'Heart of Midlothian'],
+    ['agf aarhus', 'AGF Aarhus'],
+    ['agf', 'AGF Aarhus']
+  ]);
+  return aliases.get(n) || name;
+}
+
+function sportsDbCompetition(event) {
+  const league = onlineNormalize(event.strLeague || '');
+  if (league.includes('europa league')) return 'europa';
+  if (league.includes('conference league')) return 'conference';
+  if (league.includes('champions league')) return 'champions';
+  if (league.includes('taca da liga') || league.includes('allianz cup') || league.includes('league cup')) return 'taca-liga';
+  if (league.includes('taca de portugal') || league.includes('portuguese cup')) return 'taca-portugal';
+  if (league.includes('primeira liga') || league.includes('liga portugal')) return 'liga';
+  return null;
+}
+
+function sportsDbEventToMatch(event) {
+  if (!event?.dateEvent || !event?.strHomeTeam || !event?.strAwayTeam) return null;
+
+  const home = canonicalTeamName(event.strHomeTeam);
+  const away = canonicalTeamName(event.strAwayTeam);
+  if (home !== BENFICA && away !== BENFICA) return null;
+
+  const competition = sportsDbCompetition(event);
+  if (!competition) return null;
+
+  const finished = event.strStatus === 'FT'
+    || (event.intHomeScore !== null && event.intHomeScore !== ''
+      && event.intAwayScore !== null && event.intAwayScore !== '');
+
+  const rawTime = event.strTimeLocal || event.strTime || '';
+  const time = /^\d{2}:\d{2}/.test(rawTime) ? rawTime.slice(0,5) : null;
+
+  let kickoffUtc = null;
+  if (event.strTimestamp) {
+    const ts = new Date(event.strTimestamp);
+    if (!Number.isNaN(ts.getTime())) kickoffUtc = ts.toISOString();
+  }
+
+  return {
+    id: `sportsdb-${event.idEvent || `${event.dateEvent}-${home}-${away}`}`,
+    competition,
+    round: event.intRound ? `Jornada ${event.intRound}` : (event.strGroup || 'Jogo'),
+    date: event.dateEvent,
+    time,
+    kickoffUtc,
+    home,
+    away,
+    hs: finished ? Number(event.intHomeScore) : undefined,
+    as: finished ? Number(event.intAwayScore) : undefined,
+    status: finished ? 'FT' : 'NS',
+    venue: event.strVenue || null,
+    sourceOnline: true
+  };
+}
+
+function sameFixture(a, b) {
+  if (!a || !b) return false;
+  const sameTeams = a.home === b.home && a.away === b.away;
+  if (!sameTeams) return false;
+  if (a.date && b.date && a.date === b.date) return true;
+
+  const ad = parseDate(a);
+  const bd = parseDate(b);
+  if (!ad || !bd) return false;
+  return Math.abs(ad.getTime() - bd.getTime()) <= 36 * 3600000;
+}
+
+function mergeOnlineMatches(incoming=[]) {
+  let changed = false;
+
+  for (const fresh of incoming) {
+    const current = matches.find(m => sameFixture(m, fresh));
+
+    if (current) {
+      const before = JSON.stringify(current);
+
+      if (fresh.date) current.date = fresh.date;
+      if (fresh.time) current.time = fresh.time;
+      if (fresh.kickoffUtc) current.kickoffUtc = fresh.kickoffUtc;
+      if (fresh.venue) current.venue = fresh.venue;
+
+      if (fresh.status === 'FT') {
+        current.status = 'FT';
+        current.hs = fresh.hs;
+        current.as = fresh.as;
+      }
+
+      if (JSON.stringify(current) !== before) changed = true;
+    } else {
+      matches.push(fresh);
+      changed = true;
+    }
+  }
+
+  return changed;
+}
+
+function tableNumber(row, ...keys) {
+  for (const key of keys) {
+    const v = row?.[key];
+    if (v !== undefined && v !== null && v !== '') {
+      const n = Number(v);
+      if (Number.isFinite(n)) return n;
+    }
+  }
+  return 0;
+}
+
+function applyOnlineLeagueTable(rows) {
+  if (!Array.isArray(rows) || rows.length < 10) return false;
+
+  const mapped = rows.map(row => {
+    const team = canonicalTeamName(row.strTeam || row.name || row.team || '');
+    if (!team) return null;
+
+    return [
+      team,
+      tableNumber(row, 'intPlayed', 'played', 'gamesPlayed'),
+      tableNumber(row, 'intWin', 'win', 'wins'),
+      tableNumber(row, 'intDraw', 'draw', 'draws'),
+      tableNumber(row, 'intLoss', 'loss', 'losses'),
+      tableNumber(row, 'intGoalsFor', 'goalsfor', 'goalsFor'),
+      tableNumber(row, 'intGoalsAgainst', 'goalsagainst', 'goalsAgainst'),
+      tableNumber(row, 'intPoints', 'points')
+    ];
+  }).filter(Boolean);
+
+  if (!mapped.some(r => r[0] === BENFICA)) return false;
+
+  mapped.sort((a,b) => {
+    if (b[7] !== a[7]) return b[7] - a[7];
+    const gdA = a[5] - a[6];
+    const gdB = b[5] - b[6];
+    if (gdB !== gdA) return gdB - gdA;
+    return b[5] - a[5];
+  });
+
+  leagueTable.splice(0, leagueTable.length, ...mapped);
+  return true;
+}
+
+function saveOnlineCache(events, tableRows) {
+  try {
+    if (events?.length) {
+      localStorage.setItem(ONLINE_CACHE_KEY, JSON.stringify(events));
+    }
+    if (tableRows?.length) {
+      localStorage.setItem(ONLINE_TABLE_CACHE_KEY, JSON.stringify(tableRows));
+    }
+  } catch {}
+}
+
+function applyOnlineCache() {
+  try {
+    const events = JSON.parse(localStorage.getItem(ONLINE_CACHE_KEY) || '[]');
+    const tableRows = JSON.parse(localStorage.getItem(ONLINE_TABLE_CACHE_KEY) || '[]');
+
+    if (Array.isArray(events) && events.length) {
+      mergeOnlineMatches(events);
+    }
+    if (Array.isArray(tableRows) && tableRows.length) {
+      applyOnlineLeagueTable(tableRows);
+    }
+  } catch {}
+}
+
+function setOnlineStatus(text, mode='') {
+  const el = document.getElementById('dataStatus');
+  if (!el) return;
+  el.textContent = text;
+  el.dataset.onlineMode = mode;
+}
+
+async function fetchJsonSafe(url) {
+  const response = await fetch(url, {
+    cache: 'no-store',
+    headers: { 'Accept': 'application/json' }
+  });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+}
+
+async function refreshOnlineData() {
+  setOnlineStatus('A atualizar…', 'loading');
+
+  try {
+    const [lastData, nextData, tableData] = await Promise.allSettled([
+      fetchJsonSafe(`${SPORTSDB_BASE}/eventslast.php?id=${SPORTSDB_TEAM_ID}`),
+      fetchJsonSafe(`${SPORTSDB_BASE}/eventsnext.php?id=${SPORTSDB_TEAM_ID}`),
+      fetchJsonSafe(`${SPORTSDB_BASE}/lookuptable.php?l=${SPORTSDB_LEAGUE_ID}&s=${SPORTSDB_SEASON}`)
+    ]);
+
+    const rawEvents = [];
+
+    if (lastData.status === 'fulfilled') {
+      rawEvents.push(...(lastData.value.results || lastData.value.events || []));
+    }
+    if (nextData.status === 'fulfilled') {
+      rawEvents.push(...(nextData.value.events || nextData.value.results || []));
+    }
+
+    const onlineMatches = rawEvents
+      .map(sportsDbEventToMatch)
+      .filter(Boolean);
+
+    const changedMatches = mergeOnlineMatches(onlineMatches);
+
+    let tableRows = [];
+    let changedTable = false;
+    if (tableData.status === 'fulfilled') {
+      tableRows = tableData.value.table || tableData.value.tables || [];
+      changedTable = applyOnlineLeagueTable(tableRows);
+    }
+
+    saveOnlineCache(onlineMatches, tableRows);
+
+    if (changedMatches || changedTable) {
+      renderHero();
+      renderCompetitionCards();
+      if (currentCompetition) renderDetail();
+    }
+
+    const stamp = new Intl.DateTimeFormat('pt-PT', {
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(new Date());
+
+    if (onlineMatches.length || changedTable) {
+      setOnlineStatus(`Atualizado online · ${stamp}`, 'ok');
+    } else {
+      setOnlineStatus(`Verificado online · ${stamp}`, 'ok');
+    }
+  } catch (err) {
+    setOnlineStatus('Dados locais · online indisponível', 'error');
+    console.warn('Benfica Match Center: atualização online falhou', err);
+  }
+}
+
 function routeFromHash() {
   const m = location.hash.match(/^#competicao\/([^/]+)(?:\/(status|calendar))?$/);
   if (m) openCompetition(m[1], m[2] || 'status', false);
@@ -610,10 +912,12 @@ document.querySelectorAll('.detail-tab').forEach(btn => btn.addEventListener('cl
 }));
 
 window.addEventListener('popstate', routeFromHash);
+applyOnlineCache();
 
 renderHero();
 renderCompetitionCards();
 routeFromHash();
+refreshOnlineData();
 setInterval(updateLiveCountdown, 1000);
 setInterval(renderHero, 60000);
 
