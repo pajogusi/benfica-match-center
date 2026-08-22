@@ -156,6 +156,24 @@ const competitionData = [
   }
 ];
 
+const competitionLogos = {
+  'liga': 'icons/competitions/liga-portugal.svg',
+  'taca-portugal': 'icons/competitions/taca-portugal.svg',
+  'taca-liga': 'icons/competitions/taca-liga.png',
+  'europa': 'icons/competitions/europa-league.svg',
+  'champions': 'icons/competitions/champions-league.svg',
+  'conference': 'icons/competitions/conference-league.svg',
+  'supertaca': 'icons/competitions/supertaca-portugal.svg',
+  'uefa-supercup': 'icons/competitions/uefa-supercup.svg'
+};
+
+function competitionMark(c, className='competition-logo') {
+  const src = competitionLogos[c.id];
+  return src
+    ? `<img class="${className}" src="${src}" alt="Logo ${escapeHtml(c.name)}" loading="lazy" />`
+    : `<span aria-hidden="true">${c.icon || '🏆'}</span>`;
+}
+
 const leagueTable = [
   ['Arouca',2,2,0,0,5,0,6],
   ['FC Porto',2,2,0,0,4,0,6],
@@ -311,7 +329,7 @@ function renderCompetitionCards() {
   $('#competitionGrid').innerHTML = competitionData.map(c => `
     <button class="competition-card ${c.tone}" type="button" data-open-comp="${c.id}">
       <div class="competition-card-top">
-        <span class="comp-icon">${c.icon}</span>
+        <span class="comp-icon">${competitionMark(c,'competition-logo')}</span>
         <span class="status-badge ${c.tone}">${escapeHtml(c.status)}</span>
       </div>
       <div class="competition-card-copy">
@@ -332,7 +350,7 @@ function openCompetition(id, detail='status', updateHash=true) {
   homeView.classList.add('hidden');
   competitionView.classList.remove('hidden');
   $('#competitionHeader').innerHTML = `
-    <div class="detail-icon">${c.icon}</div>
+    <div class="detail-icon">${competitionMark(c,'detail-competition-logo')}</div>
     <div class="detail-title-copy">
       <span>${escapeHtml(c.subtitle)}</span>
       <h1>${escapeHtml(c.name)}</h1>

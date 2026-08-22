@@ -13,3 +13,7 @@ Web app não oficial para acompanhar a equipa principal de futebol do SL Benfica
 - responsiva e preparada para GitHub Pages/PWA.
 
 Os dados-base foram verificados em 22/08/2026 em fontes oficiais do SL Benfica, Liga Portugal, FPF e UEFA. Horários e sorteios podem sofrer alterações.
+
+## Marcas e emblemas
+
+Projeto não oficial e sem afiliação com o SL Benfica, Liga Portugal, FPF ou UEFA. Os nomes, emblemas e logótipos pertencem aos respetivos titulares e são apresentados apenas para identificar clubes e competições.

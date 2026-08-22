@@ -279,3 +279,32 @@ footer strong { color: #ddd; margin-right: 7px; }
   .hero-team.away .hero-team-name { justify-content: flex-start; }
   .mini-team-crest { width: 22px; height: 22px; flex-basis: 22px; }
 }
+
+
+/* COMPETITION LOGOS PATCH v3 */
+.comp-icon,
+.detail-icon {
+  overflow: hidden;
+  padding: 6px;
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255,255,255,.09), transparent 55%),
+    #202026;
+}
+.competition-logo,
+.detail-competition-logo {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 9px rgba(0,0,0,.28));
+}
+.detail-icon { padding: 7px; }
+.competition-card.out .competition-logo {
+  filter: grayscale(.18) opacity(.78) drop-shadow(0 4px 8px rgba(0,0,0,.24));
+}
+.competition-logo { transition: transform .18s ease; }
+.competition-card:hover .competition-logo { transform: scale(1.05); }
+@media (max-width: 700px) {
+  .comp-icon { width: 50px; height: 50px; }
+  .detail-icon { width: 58px; height: 58px; }
+}
