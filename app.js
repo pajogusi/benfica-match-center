@@ -1,318 +1,428 @@
 const BENFICA = 'SL Benfica';
-const BASELINE_UPDATED = '2026-08-22T15:45:00Z';
+const DATA_DATE = '22/08/2026';
 
-const competitions = [
-  { id: 'liga', name: 'Liga Portugal', short: 'Liga Portugal', icon: '🇵🇹', status: 'Em curso', detail: 'Liga Betclic 2026/27 · 34 jornadas' },
-  { id: 'europa', name: 'Liga Europa UEFA', short: 'Liga Europa', icon: '🇪🇺', status: 'Play-off de qualificação', detail: 'Vantagem de 3–1 antes da 2.ª mão com o AGF Aarhus' },
-  { id: 'taca-liga', name: 'Taça da Liga', short: 'Taça da Liga', icon: '🏆', status: 'Por iniciar', detail: 'Calendário ainda sem jogos na base local' },
-  { id: 'taca-portugal', name: 'Taça de Portugal', short: 'Taça de Portugal', icon: '🏆', status: 'Por iniciar', detail: 'Calendário ainda sem jogos na base local' }
+const competitionData = [
+  {
+    id: 'liga',
+    name: 'Liga Portugal',
+    subtitle: 'Liga Portugal Betclic 2026/27',
+    icon: '🇵🇹',
+    status: 'Em curso',
+    tone: 'active',
+    shortDetail: '4 pontos após 2 jornadas · 34 jornadas',
+    statusTitle: 'Campeonato em curso',
+    statusText: 'O Benfica soma 4 pontos após as duas primeiras jornadas: empate 2–2 com o Académico de Viseu e vitória 7–0 frente ao Casa Pia.',
+    tableType: 'league',
+    sourceLabel: 'Liga Portugal',
+    sourceUrl: 'https://www.ligaportugal.pt/team/278/sl-benfica/20262027'
+  },
+  {
+    id: 'taca-portugal',
+    name: 'Taça de Portugal',
+    subtitle: 'Taça de Portugal 2026/27',
+    icon: '🏆',
+    status: 'Qualificado',
+    tone: 'qualified',
+    shortDetail: 'Entrada prevista na 4.ª eliminatória · 21/22 Nov',
+    statusTitle: 'Entrada na 4.ª eliminatória',
+    statusText: 'Por disputar competições europeias, o Benfica entra mais tarde na prova. O adversário ainda não está definido.',
+    tableType: 'knockout',
+    stages: [
+      { label: '1.ª–3.ª eliminatórias', value: 'Isento / entrada tardia' },
+      { label: '4.ª eliminatória', value: 'Qualificado · adversário por sortear' },
+      { label: 'Estado', value: 'Em prova' }
+    ],
+    sourceLabel: 'FPF / calendário 2026/27',
+    sourceUrl: 'https://www.fpf.pt/'
+  },
+  {
+    id: 'taca-liga',
+    name: 'Taça da Liga',
+    subtitle: 'Allianz CUP 2026/27',
+    icon: '🥇',
+    status: 'Qualificado',
+    tone: 'qualified',
+    shortDetail: 'Quartos de final · Benfica × Gil Vicente',
+    statusTitle: 'Apurado para os quartos de final',
+    statusText: 'O Benfica integra os oito participantes da Allianz CUP 2026/27 e defronta o Gil Vicente nos quartos de final.',
+    tableType: 'knockout',
+    stages: [
+      { label: 'Qualificação', value: 'Apurado pelo campeonato 2025/26' },
+      { label: 'Quartos de final', value: 'Benfica × Gil Vicente' },
+      { label: 'Final Four', value: 'Por apurar' }
+    ],
+    sourceLabel: 'Liga Portugal',
+    sourceUrl: 'https://www.ligaportugal.pt/noticias?tags=allianz-cup'
+  },
+  {
+    id: 'europa',
+    name: 'Liga Europa',
+    subtitle: 'UEFA Europa League 2026/27',
+    icon: '🇪🇺',
+    status: 'Em curso',
+    tone: 'active',
+    shortDetail: 'Play-off · vantagem 3–1 sobre o Aarhus',
+    statusTitle: 'Play-off de acesso à fase de liga',
+    statusText: 'O Benfica venceu a 1.ª mão por 3–1. A decisão é a 27 de agosto, na Dinamarca. Se vencer a eliminatória, entra na fase de liga da Liga Europa.',
+    tableType: 'knockout',
+    stages: [
+      { label: '2.ª pré-eliminatória', value: 'Apurado · 6–2 agg. vs St. Gallen' },
+      { label: '3.ª pré-eliminatória', value: 'Apurado · 7–2 agg. vs Hearts' },
+      { label: 'Play-off', value: '3–1 após a 1.ª mão vs Aarhus' },
+      { label: 'Fase de liga', value: 'Por apurar' }
+    ],
+    sourceLabel: 'UEFA',
+    sourceUrl: 'https://www.uefa.com/uefaeuropaleague/clubs/50147/matches/'
+  },
+  {
+    id: 'champions',
+    name: 'Liga dos Campeões',
+    subtitle: 'UEFA Champions League 2026/27',
+    icon: '⭐',
+    status: 'Não qualificado',
+    tone: 'out',
+    shortDetail: 'O Benfica não participa nesta edição',
+    statusTitle: 'Não qualificado',
+    statusText: 'A UEFA confirma que o Benfica não participa na Liga dos Campeões 2026/27. A campanha europeia desta época começou na Liga Europa.',
+    tableType: 'inactive',
+    sourceLabel: 'UEFA',
+    sourceUrl: 'https://www.uefa.com/uefachampionsleague/clubs/50147/'
+  },
+  {
+    id: 'conference',
+    name: 'Liga Conferência',
+    subtitle: 'UEFA Conference League 2026/27',
+    icon: '🌍',
+    status: 'Acesso condicionado',
+    tone: 'pending',
+    shortDetail: 'Só entra se for eliminado no play-off da Liga Europa',
+    statusTitle: 'Participação ainda condicionada',
+    statusText: 'O Benfica não está atualmente a disputar a Liga Conferência. Pelas regras UEFA, uma derrota no play-off da Liga Europa coloca o clube na fase de liga da Conference League.',
+    tableType: 'inactive',
+    sourceLabel: 'UEFA',
+    sourceUrl: 'https://www.uefa.com/uefaeuropaleague/accesslist/'
+  },
+  {
+    id: 'supertaca',
+    name: 'Supertaça de Portugal',
+    subtitle: 'Supertaça Cândido de Oliveira 2026',
+    icon: '🏅',
+    status: 'Não qualificado',
+    tone: 'out',
+    shortDetail: 'Prova já disputada sem o Benfica',
+    statusTitle: 'Não qualificado para a edição de 2026',
+    statusText: 'A Supertaça de 2026 foi disputada por FC Porto e SCU Torreense. O Benfica não participou nesta edição.',
+    tableType: 'inactive',
+    sourceLabel: 'FPF / Liga Portugal',
+    sourceUrl: 'https://www.fpf.pt/'
+  },
+  {
+    id: 'uefa-supercup',
+    name: 'Supertaça UEFA',
+    subtitle: 'UEFA Super Cup 2026',
+    icon: '🏟️',
+    status: 'Não qualificado',
+    tone: 'out',
+    shortDetail: 'Sem qualificação para esta prova',
+    statusTitle: 'Não qualificado',
+    statusText: 'A Supertaça UEFA é reservada aos vencedores das principais provas europeias da época anterior. O Benfica não se qualificou para a edição de 2026.',
+    tableType: 'inactive',
+    sourceLabel: 'UEFA',
+    sourceUrl: 'https://www.uefa.com/uefasupercup/'
+  }
 ];
 
-const baselineMatches = [
-  { id:'uel-20260723', competition:'europa', round:'2.ª pré-eliminatória · 1.ª mão', date:'2026-07-23', time:'19:00', home:'FC St. Gallen 1879', away:BENFICA, hs:2, as:1, status:'FT', venue:'Estádio Sitter', source:'official' },
-  { id:'uel-20260730', competition:'europa', round:'2.ª pré-eliminatória · 2.ª mão', date:'2026-07-30', time:'20:00', home:BENFICA, away:'FC St. Gallen 1879', hs:5, as:0, status:'FT', venue:'Estádio da Luz', source:'official' },
-  { id:'uel-20260806', competition:'europa', round:'3.ª pré-eliminatória · 1.ª mão', date:'2026-08-06', time:'20:00', home:BENFICA, away:'Heart of Midlothian', hs:6, as:1, status:'FT', venue:'Estádio da Luz', source:'official' },
-  { id:'liga-20260809', competition:'liga', round:'Jornada 1', date:'2026-08-09', time:'20:30', home:BENFICA, away:'Académico de Viseu', hs:2, as:2, status:'FT', venue:'Estádio da Luz', source:'official' },
-  { id:'uel-20260813', competition:'europa', round:'3.ª pré-eliminatória · 2.ª mão', date:'2026-08-13', time:'19:45', home:'Heart of Midlothian', away:BENFICA, hs:1, as:1, status:'FT', venue:'Tynecastle Park', source:'official' },
-  { id:'liga-20260817', competition:'liga', round:'Jornada 2', date:'2026-08-17', time:'20:15', home:'Casa Pia AC', away:BENFICA, hs:0, as:7, status:'FT', venue:'Estádio Municipal de Rio Maior', source:'official' },
-  { id:'uel-20260820', competition:'europa', round:'Play-off · 1.ª mão', date:'2026-08-20', time:'20:00', home:BENFICA, away:'AGF Aarhus', hs:3, as:1, status:'FT', venue:'Estádio da Luz', source:'official' },
-  { id:'uel-20260827', competition:'europa', round:'Play-off · 2.ª mão', date:'2026-08-27', time:'19:00', home:'AGF Aarhus', away:BENFICA, hs:null, as:null, status:'NS', venue:'Cepheus Park Randers', source:'official' },
-  { id:'liga-r3', competition:'liga', round:'Jornada 3', date:null, time:null, home:'Moreirense FC', away:BENFICA, hs:null, as:null, status:'NS', venue:'Parque Joaquim de Almeida Freitas', source:'draw' },
-  { id:'liga-20260831', competition:'liga', round:'Jornada 4', date:'2026-08-31', time:null, home:BENFICA, away:'Estoril Praia', hs:null, as:null, status:'NS', venue:'Estádio da Luz', source:'official' },
-  { id:'liga-r5', competition:'liga', round:'Jornada 5', date:null, time:null, home:'Marítimo', away:BENFICA, hs:null, as:null, status:'NS', venue:null, source:'draw' },
-  { id:'liga-20260913', competition:'liga', round:'Jornada 6', date:'2026-09-13', time:null, home:BENFICA, away:'Gil Vicente FC', hs:null, as:null, status:'NS', venue:'Estádio da Luz', source:'official-date' },
-  { id:'liga-r7', competition:'liga', round:'Jornada 7', date:null, time:null, home:'FC Porto', away:BENFICA, hs:null, as:null, status:'NS', venue:'Estádio do Dragão', source:'draw' },
-  { id:'liga-20261011', competition:'liga', round:'Jornada 8', date:'2026-10-11', time:null, home:BENFICA, away:'Vitória SC', hs:null, as:null, status:'NS', venue:'Estádio da Luz', source:'official-date' },
-  { id:'liga-r9', competition:'liga', round:'Jornada 9', date:null, time:null, home:'Santa Clara', away:BENFICA, hs:null, as:null, status:'NS', venue:null, source:'draw' },
-  { id:'liga-r10', competition:'liga', round:'Jornada 10', date:null, time:null, home:BENFICA, away:'FC Alverca', hs:null, as:null, status:'NS', venue:'Estádio da Luz', source:'draw' },
-  { id:'liga-20261108', competition:'liga', round:'Jornada 11', date:'2026-11-08', time:null, home:'CF Estrela Amadora', away:BENFICA, hs:null, as:null, status:'NS', venue:'Estádio José Gomes', source:'official-date' },
-  { id:'liga-20261129', competition:'liga', round:'Jornada 12', date:'2026-11-29', time:null, home:BENFICA, away:'FC Famalicão', hs:null, as:null, status:'NS', venue:'Estádio da Luz', source:'official-date' },
-  { id:'liga-20261206', competition:'liga', round:'Jornada 13', date:'2026-12-06', time:null, home:'CD Nacional', away:BENFICA, hs:null, as:null, status:'NS', venue:'Estádio da Madeira', source:'official-date' },
-  { id:'liga-r14', competition:'liga', round:'Jornada 14', date:null, time:null, home:BENFICA, away:'SC Braga', hs:null, as:null, status:'NS', venue:'Estádio da Luz', source:'draw' },
-  { id:'liga-r15', competition:'liga', round:'Jornada 15', date:null, time:null, home:'Rio Ave FC', away:BENFICA, hs:null, as:null, status:'NS', venue:null, source:'draw' },
-  { id:'liga-20261227', competition:'liga', round:'Jornada 16', date:'2026-12-27', time:null, home:BENFICA, away:'Sporting CP', hs:null, as:null, status:'NS', venue:'Estádio da Luz', source:'official-date' },
-  { id:'liga-20270110', competition:'liga', round:'Jornada 17', date:'2027-01-10', time:null, home:'FC Arouca', away:BENFICA, hs:null, as:null, status:'NS', venue:'Estádio Municipal de Arouca', source:'official-date' }
+const leagueTable = [
+  ['Arouca',2,2,0,0,5,0,6],
+  ['FC Porto',2,2,0,0,4,0,6],
+  ['Marítimo',2,2,0,0,3,1,6],
+  ['SL Benfica',2,1,1,0,9,2,4],
+  ['Nacional',2,1,1,0,4,2,4],
+  ['Sporting CP',2,1,1,0,5,4,4],
+  ['Santa Clara',2,1,1,0,3,2,4],
+  ['Gil Vicente',1,1,0,0,1,0,3],
+  ['Estrela Amadora',2,0,2,0,4,4,2],
+  ['SC Braga',1,0,1,0,2,2,1],
+  ['Académico de Viseu',2,0,1,1,2,3,1],
+  ['Famalicão',2,0,1,1,2,3,1],
+  ['Alverca',2,0,1,1,2,4,1],
+  ['Estoril',2,0,1,1,1,3,1],
+  ['Moreirense',2,0,1,1,2,6,1],
+  ['Vitória SC',2,0,0,2,2,4,0],
+  ['Rio Ave',2,0,0,2,0,3,0],
+  ['Casa Pia',2,0,0,2,0,8,0]
 ];
 
 const firstHalf = [
-  [BENFICA,'Académico de Viseu'], ['Casa Pia AC',BENFICA], ['Moreirense FC',BENFICA], [BENFICA,'Estoril Praia'],
-  ['Marítimo',BENFICA], [BENFICA,'Gil Vicente FC'], ['FC Porto',BENFICA], [BENFICA,'Vitória SC'],
-  ['Santa Clara',BENFICA], [BENFICA,'FC Alverca'], ['CF Estrela Amadora',BENFICA], [BENFICA,'FC Famalicão'],
-  ['CD Nacional',BENFICA], [BENFICA,'SC Braga'], ['Rio Ave FC',BENFICA], [BENFICA,'Sporting CP'], ['FC Arouca',BENFICA]
-];
-const leagueRounds = [
-  ...firstHalf.map((teams, i) => ({round:i+1, home:teams[0], away:teams[1]})),
-  ...firstHalf.map((teams, i) => ({round:i+18, home:teams[1], away:teams[0]}))
+  [BENFICA,'Académico de Viseu'], ['Casa Pia',BENFICA], ['Moreirense',BENFICA], [BENFICA,'Estoril'],
+  ['Marítimo',BENFICA], [BENFICA,'Gil Vicente'], ['FC Porto',BENFICA], [BENFICA,'Vitória SC'],
+  ['Santa Clara',BENFICA], [BENFICA,'Alverca'], ['Estrela Amadora',BENFICA], [BENFICA,'Famalicão'],
+  ['Nacional',BENFICA], [BENFICA,'SC Braga'], ['Rio Ave',BENFICA], [BENFICA,'Sporting CP'], ['Arouca',BENFICA]
 ];
 
-let state = {
-  view: 'overview',
-  competition: 'all',
-  search: '',
-  matches: loadSavedMatches() || structuredClone(baselineMatches),
-  dataLabel: loadSavedMatches() ? 'Dados guardados no browser' : 'Dados verificados · 22/08/2026'
-};
+const leagueCalendar = [
+  ...firstHalf.map((t,i)=>({competition:'liga', round:`Jornada ${i+1}`, order:i+1, home:t[0], away:t[1], status:'NS'})),
+  ...firstHalf.map((t,i)=>({competition:'liga', round:`Jornada ${i+18}`, order:i+18, home:t[1], away:t[0], status:'NS'}))
+];
 
-const $ = sel => document.querySelector(sel);
-const viewRoot = $('#viewRoot');
-const competitionFilter = $('#competitionFilter');
-const searchInput = $('#searchInput');
+Object.assign(leagueCalendar[0], {date:'2026-08-09', time:'20:30', hs:2, as:2, status:'FT', venue:'Estádio da Luz'});
+Object.assign(leagueCalendar[1], {date:'2026-08-17', time:'20:15', hs:0, as:7, status:'FT', venue:'Estádio Municipal de Rio Maior'});
+Object.assign(leagueCalendar[2], {date:'2026-09-09', time:'20:15', venue:'Parque Joaquim de Almeida Freitas'});
+Object.assign(leagueCalendar[3], {date:'2026-08-31', time:null, venue:'Estádio da Luz'});
 
-function loadSavedMatches(){
-  try {
-    const raw = localStorage.getItem('benfica-live-matches-v1');
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || !parsed.length) return null;
-    return mergeMatches(structuredClone(baselineMatches), parsed);
-  } catch { return null; }
+const matches = [
+  ...leagueCalendar,
+  {id:'uel-2307',competition:'europa',round:'2.ª pré-eliminatória · 1.ª mão',date:'2026-07-23',time:null,home:'St. Gallen',away:BENFICA,hs:2,as:1,status:'FT',venue:'Estádio Sitter'},
+  {id:'uel-3007',competition:'europa',round:'2.ª pré-eliminatória · 2.ª mão',date:'2026-07-30',time:null,home:BENFICA,away:'St. Gallen',hs:5,as:0,status:'FT',venue:'Estádio da Luz'},
+  {id:'uel-0608',competition:'europa',round:'3.ª pré-eliminatória · 1.ª mão',date:'2026-08-06',time:'20:00',home:BENFICA,away:'Heart of Midlothian',hs:6,as:1,status:'FT',venue:'Estádio da Luz'},
+  {id:'uel-1308',competition:'europa',round:'3.ª pré-eliminatória · 2.ª mão',date:'2026-08-13',time:'19:45',home:'Heart of Midlothian',away:BENFICA,hs:1,as:1,status:'FT',venue:'Tynecastle Park'},
+  {id:'uel-2008',competition:'europa',round:'Play-off · 1.ª mão',date:'2026-08-20',time:'20:00',home:BENFICA,away:'AGF Aarhus',hs:3,as:1,status:'FT',venue:'Estádio da Luz'},
+  {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'19:00',home:'AGF Aarhus',away:BENFICA,status:'NS',venue:'Randers Stadion',note:'19:00 hora UK'},
+  {id:'allianz-qf',competition:'taca-liga',round:'Quartos de final',date:'2026-10-27',time:null,home:BENFICA,away:'Gil Vicente',status:'NS',venue:'Estádio da Luz'},
+  {id:'tp-r4',competition:'taca-portugal',round:'4.ª eliminatória',date:null,time:null,home:BENFICA,away:'Adversário por sortear',status:'NS',venue:null,note:'Janela prevista: 21/22 novembro 2026'}
+];
+
+let currentCompetition = null;
+let currentDetail = 'status';
+
+const $ = (s) => document.querySelector(s);
+const homeView = $('#homeView');
+const competitionView = $('#competitionView');
+const detailRoot = $('#competitionDetailRoot');
+
+function escapeHtml(v='') {
+  return String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 }
 
-function comp(id){ return competitions.find(c => c.id === id) || {name:id,short:id,icon:'⚽'}; }
-function normalize(s=''){ return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
-function parseDate(match){
-  if (!match.date) return null;
-  const iso = `${match.date}T${match.time || '12:00'}:00`;
-  return new Date(iso);
+function comp(id) { return competitionData.find(c => c.id === id); }
+
+function parseDate(m) {
+  if (!m.date) return null;
+  return new Date(`${m.date}T${m.time || '12:00'}:00`);
 }
-function dateLabel(match, long=false){
-  if (!match.date) return 'Data por confirmar';
-  const d = parseDate(match);
-  const opt = long ? {weekday:'long', day:'numeric', month:'long', year:'numeric'} : {day:'2-digit', month:'short', year:'numeric'};
-  const text = new Intl.DateTimeFormat('pt-PT', opt).format(d);
-  return match.time ? `${text} · ${match.time}` : `${text} · hora por confirmar`;
+
+function dateText(m, long=false) {
+  if (!m.date) return m.note || 'Data por confirmar';
+  const d = parseDate(m);
+  const opts = long ? {weekday:'long',day:'numeric',month:'long',year:'numeric'} : {day:'2-digit',month:'short',year:'numeric'};
+  const base = new Intl.DateTimeFormat('pt-PT', opts).format(d);
+  return m.time ? `${base} · ${m.time}` : `${base} · hora por confirmar`;
 }
-function resultLetter(m){
+
+function scoreText(m) { return m.status === 'FT' ? `${m.hs} – ${m.as}` : 'vs'; }
+
+function benficaResult(m) {
   if (m.status !== 'FT') return null;
-  const benficaHome = m.home === BENFICA;
-  const gf = benficaHome ? m.hs : m.as;
-  const ga = benficaHome ? m.as : m.hs;
+  const gf = m.home === BENFICA ? m.hs : m.as;
+  const ga = m.home === BENFICA ? m.as : m.hs;
   return gf > ga ? 'W' : gf < ga ? 'L' : 'D';
 }
-function resultLabel(letter){ return letter === 'W' ? 'Vitória' : letter === 'L' ? 'Derrota' : 'Empate'; }
-function scoreText(m){ return m.status === 'FT' ? `${m.hs} – ${m.as}` : 'vs'; }
-function filtered(matches = state.matches){
-  const q = normalize(state.search);
-  return matches.filter(m => (state.competition === 'all' || m.competition === state.competition) && (!q || normalize(`${m.home} ${m.away}`).includes(q)));
-}
-function knownUpcoming(){
+
+function resultLabel(r) { return r === 'W' ? 'Vitória' : r === 'L' ? 'Derrota' : 'Empate'; }
+
+function upcomingMatches() {
   const now = new Date();
-  return state.matches.filter(m => m.status !== 'FT' && m.date).sort((a,b) => parseDate(a) - parseDate(b)).filter(m => parseDate(m) >= new Date(now.getTime()-6*60*60*1000));
+  return matches.filter(m => m.status !== 'FT' && m.date && parseDate(m) > new Date(now.getTime() - 4*3600000)).sort((a,b)=>parseDate(a)-parseDate(b));
 }
 
-function renderHero(){
-  const m = knownUpcoming()[0];
-  const hero = $('#nextMatchHero');
+function countdown(m) {
+  const dt = parseDate(m);
+  if (!dt) return 'Data por confirmar';
+  const diff = dt - new Date();
+  if (diff <= 0) return 'Hoje';
+  const days = Math.floor(diff/86400000);
+  const hours = Math.floor((diff%86400000)/3600000);
+  if (days) return `Faltam ${days}d ${hours}h`;
+  const mins = Math.floor((diff%3600000)/60000);
+  return `Faltam ${hours}h ${mins}m`;
+}
+
+function renderHero() {
+  const m = upcomingMatches()[0];
+  const root = $('#nextMatchHero');
   if (!m) {
-    hero.innerHTML = `<span class="hero-kicker">Próximo jogo</span><div class="hero-main"><div class="hero-team"><strong>A aguardar calendário</strong></div></div>`;
+    root.innerHTML = `<div class="hero-kicker">Próximo jogo</div><h2>A aguardar confirmação do próximo encontro</h2>`;
     return;
   }
-  hero.innerHTML = `
-    <span class="hero-kicker">Próximo jogo · ${escapeHtml(comp(m.competition).short)}</span>
+  const c = comp(m.competition);
+  root.innerHTML = `
+    <div class="hero-topline">
+      <span class="hero-kicker">Próximo jogo</span>
+      <button class="hero-comp-link" type="button" data-open-comp="${c.id}">${escapeHtml(c.name)} →</button>
+    </div>
     <div class="hero-main">
       <div class="hero-team"><span>Casa</span><strong>${escapeHtml(m.home)}</strong></div>
       <div class="hero-vs">VS</div>
       <div class="hero-team away"><span>Fora</span><strong>${escapeHtml(m.away)}</strong></div>
     </div>
     <div class="hero-info">
-      <span class="hero-pill">📅 ${escapeHtml(dateLabel(m, true))}</span>
-      <span class="hero-pill">🏟️ ${escapeHtml(m.venue || 'Local por confirmar')}</span>
+      <span class="hero-pill">📅 ${escapeHtml(dateText(m,true))}${m.note ? ` · ${escapeHtml(m.note)}` : ''}</span>
       <span class="hero-pill">🏆 ${escapeHtml(m.round)}</span>
-      <span class="hero-pill" id="countdown">⏱️ ${countdownText(m)}</span>
+      <span class="hero-pill">🏟️ ${escapeHtml(m.venue || 'Local por confirmar')}</span>
+      <span class="hero-pill">⏱️ ${escapeHtml(countdown(m))}</span>
     </div>
-    <div class="hero-actions">
-      <button class="btn btn-primary" type="button" data-calendar-id="${m.id}">Adicionar ao calendário</button>
-      <a class="btn btn-ghost" href="https://www.slbenfica.pt/pt-pt/futebol/calendario" target="_blank" rel="noreferrer" style="text-decoration:none">Fonte oficial</a>
+  `;
+}
+
+function renderCompetitionCards() {
+  $('#competitionGrid').innerHTML = competitionData.map(c => `
+    <button class="competition-card ${c.tone}" type="button" data-open-comp="${c.id}">
+      <div class="competition-card-top">
+        <span class="comp-icon">${c.icon}</span>
+        <span class="status-badge ${c.tone}">${escapeHtml(c.status)}</span>
+      </div>
+      <div class="competition-card-copy">
+        <span class="comp-subtitle">${escapeHtml(c.subtitle)}</span>
+        <h3>${escapeHtml(c.name)}</h3>
+        <p>${escapeHtml(c.shortDetail)}</p>
+      </div>
+      <span class="card-link">Ver classificação, calendário e resultados <b>→</b></span>
+    </button>
+  `).join('');
+}
+
+function openCompetition(id, detail='status', updateHash=true) {
+  const c = comp(id);
+  if (!c) return showHome();
+  currentCompetition = id;
+  currentDetail = detail;
+  homeView.classList.add('hidden');
+  competitionView.classList.remove('hidden');
+  $('#competitionHeader').innerHTML = `
+    <div class="detail-icon">${c.icon}</div>
+    <div class="detail-title-copy">
+      <span>${escapeHtml(c.subtitle)}</span>
+      <h1>${escapeHtml(c.name)}</h1>
+      <div class="detail-status-line">
+        <span class="status-badge ${c.tone}">${escapeHtml(c.status)}</span>
+        <span>${escapeHtml(c.shortDetail)}</span>
+      </div>
+    </div>
+    <a class="source-button" href="${c.sourceUrl}" target="_blank" rel="noreferrer">Fonte: ${escapeHtml(c.sourceLabel)} ↗</a>
+  `;
+  document.querySelectorAll('.detail-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.detail === detail));
+  renderDetail();
+  if (updateHash) history.pushState(null,'',`#competicao/${id}/${detail}`);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showHome(updateHash=true) {
+  currentCompetition = null;
+  homeView.classList.remove('hidden');
+  competitionView.classList.add('hidden');
+  if (updateHash) history.pushState(null,'',location.pathname + location.search);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderDetail() {
+  const c = comp(currentCompetition);
+  if (!c) return;
+  detailRoot.innerHTML = currentDetail === 'status' ? renderStatus(c) : renderCalendar(c);
+}
+
+function renderStatus(c) {
+  const intro = `
+    <article class="status-panel ${c.tone}">
+      <div>
+        <span class="panel-kicker">Estado atual</span>
+        <h2>${escapeHtml(c.statusTitle)}</h2>
+        <p>${escapeHtml(c.statusText)}</p>
+      </div>
+    </article>`;
+
+  if (c.tableType === 'league') return intro + renderLeagueTable();
+  if (c.tableType === 'knockout') {
+    return intro + `
+      <div class="section-head"><div><h2>Percurso / classificação na prova</h2><p>Nesta fase a prova é a eliminar, por isso não existe tabela por pontos.</p></div></div>
+      <div class="stage-list">
+        ${(c.stages || []).map((s,i)=>`<div class="stage-row"><span class="stage-index">${i+1}</span><div><strong>${escapeHtml(s.label)}</strong><span>${escapeHtml(s.value)}</span></div></div>`).join('')}
+      </div>`;
+  }
+  return intro + `<div class="empty-state"><strong>Sem classificação do Benfica nesta competição.</strong><span>O clube não está atualmente a disputar esta prova.</span></div>`;
+}
+
+function renderLeagueTable() {
+  return `
+    <div class="section-head"><div><h2>Classificação da Liga</h2><p>Snapshot após a 2.ª jornada completa. Dados verificados em 18/08/2026.</p></div></div>
+    <div class="table-wrap">
+      <table class="standings-table">
+        <thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead>
+        <tbody>${leagueTable.map((r,i)=>{
+          const [team,j,v,e,d,gm,gs,pts]=r; const gd=gm-gs;
+          return `<tr class="${team===BENFICA?'benfica-row':''}"><td>${i+1}</td><td>${escapeHtml(team)}</td><td>${j}</td><td>${v}</td><td>${e}</td><td>${d}</td><td>${gm}</td><td>${gs}</td><td>${gd>0?'+':''}${gd}</td><td><strong>${pts}</strong></td></tr>`;
+        }).join('')}</tbody>
+      </table>
     </div>`;
 }
 
-function countdownText(m){
-  const dt = parseDate(m); if (!dt) return 'Data por confirmar';
-  const diff = dt - new Date(); if (diff <= 0) return 'Hoje / em curso';
-  const days = Math.floor(diff/86400000); const hours = Math.floor((diff%86400000)/3600000); const mins = Math.floor((diff%3600000)/60000);
-  if (days) return `Faltam ${days}d ${hours}h`;
-  return `Faltam ${hours}h ${mins}m`;
+function renderCalendar(c) {
+  const compMatches = matches.filter(m => m.competition === c.id);
+  const results = compMatches.filter(m => m.status === 'FT').sort((a,b)=>(parseDate(b)||0)-(parseDate(a)||0));
+  const upcoming = compMatches.filter(m => m.status !== 'FT').sort((a,b)=>{
+    if (a.date && b.date) return parseDate(a)-parseDate(b);
+    if (a.date) return -1;
+    if (b.date) return 1;
+    return (a.order || 999) - (b.order || 999);
+  });
+
+  if (!compMatches.length) {
+    return `<div class="empty-state large"><strong>O Benfica não tem jogos nesta competição em 2026/27.</strong><span>Estado: ${escapeHtml(c.status)}.</span></div>`;
+  }
+
+  return `
+    ${results.length ? `<div class="section-head"><div><h2>Últimos resultados</h2><p>Jogos já realizados nesta competição.</p></div></div><div class="match-list">${results.map(matchCard).join('')}</div>` : ''}
+    <div class="section-head"><div><h2>Calendário</h2><p>Próximos jogos e jornadas. Datas não confirmadas são assinaladas.</p></div></div>
+    <div class="match-list">${upcoming.length ? upcoming.map(matchCard).join('') : '<div class="empty-state"><strong>Sem próximos jogos confirmados.</strong><span>O calendário será atualizado quando existirem novos jogos.</span></div>'}</div>
+  `;
 }
 
-function renderSummary(){
-  const finished = state.matches.filter(m => m.status === 'FT');
-  $('#officialCount').textContent = finished.length;
-  $('#winsCount').textContent = finished.filter(m => resultLetter(m) === 'W').length;
-  const goals = finished.reduce((sum,m) => sum + (m.home === BENFICA ? m.hs : m.as), 0);
-  $('#goalsCount').textContent = goals;
-  $('#dataStatus').textContent = state.dataLabel;
-}
-
-function matchCard(m){
-  const letter = resultLetter(m);
-  const action = m.status === 'FT' ? `<span>${escapeHtml(m.venue || '')}</span>` : `<button type="button" data-calendar-id="${m.id}">+ Calendário</button>`;
-  return `<article class="match-card">
+function matchCard(m) {
+  const r = benficaResult(m);
+  return `<article class="match-card ${m.status==='FT'?'finished':'upcoming'}">
     <div class="match-meta">
-      <span class="competition-badge"><span class="competition-dot"></span>${escapeHtml(comp(m.competition).short)} · ${escapeHtml(m.round)}</span>
-      <span>${escapeHtml(dateLabel(m))}</span>
+      <span>${escapeHtml(m.round)}</span>
+      <span>${escapeHtml(dateText(m))}</span>
     </div>
     <div class="match-teams">
-      <div class="team ${m.home===BENFICA?'benfica':''}">${escapeHtml(m.home)}</div>
-      <div class="score ${m.status!=='FT'?'pending':''}">${escapeHtml(scoreText(m))}</div>
-      <div class="team right ${m.away===BENFICA?'benfica':''}">${escapeHtml(m.away)}</div>
+      <strong class="${m.home===BENFICA?'benfica-team':''}">${escapeHtml(m.home)}</strong>
+      <span class="score ${m.status!=='FT'?'pending':''}">${escapeHtml(scoreText(m))}</span>
+      <strong class="right ${m.away===BENFICA?'benfica-team':''}">${escapeHtml(m.away)}</strong>
     </div>
-    <div class="match-footer">
-      ${letter ? `<span class="result-pill result-${letter}">${resultLabel(letter)}</span>` : `<span>${escapeHtml(m.venue || 'Local por confirmar')}</span>`}
-      ${action}
+    <div class="match-bottom">
+      <span>${escapeHtml(m.note || m.venue || 'Local por confirmar')}</span>
+      ${r ? `<span class="result-badge ${r}">${resultLabel(r)}</span>` : '<span class="future-badge">Agendado</span>'}
     </div>
   </article>`;
 }
 
-function renderOverview(){
-  const items = filtered();
-  const upcoming = items.filter(m=>m.status!=='FT').sort(sortMatches).slice(0,5);
-  const results = items.filter(m=>m.status==='FT').sort((a,b)=>parseDate(b)-parseDate(a)).slice(0,5);
-  viewRoot.innerHTML = `
-    ${section('Próximos jogos','Os jogos com data confirmada aparecem primeiro.', upcoming)}
-    ${section('Últimos resultados','Resultados oficiais da época 2026/27.', results)}
-  `;
+function routeFromHash() {
+  const m = location.hash.match(/^#competicao\/([^/]+)(?:\/(status|calendar))?$/);
+  if (m) openCompetition(m[1], m[2] || 'status', false);
+  else showHome(false);
 }
 
-function section(title, subtitle, matches){
-  return `<div class="section-head"><div><h2>${title}</h2><p>${subtitle}</p></div><span class="count">${matches.length}</span></div>
-  <div class="match-list">${matches.length ? matches.map(matchCard).join('') : '<div class="empty">Sem jogos para mostrar com estes filtros.</div>'}</div>`;
+document.addEventListener('click', (e) => {
+  const open = e.target.closest('[data-open-comp]');
+  if (open) return openCompetition(open.dataset.openComp);
+});
+
+$('#backButton').addEventListener('click', () => showHome());
+$('#homeButton').addEventListener('click', () => showHome());
+
+document.querySelectorAll('.detail-tab').forEach(btn => btn.addEventListener('click', () => {
+  currentDetail = btn.dataset.detail;
+  document.querySelectorAll('.detail-tab').forEach(b => b.classList.toggle('active', b === btn));
+  renderDetail();
+  if (currentCompetition) history.replaceState(null,'',`#competicao/${currentCompetition}/${currentDetail}`);
+}));
+
+window.addEventListener('popstate', routeFromHash);
+
+renderHero();
+renderCompetitionCards();
+routeFromHash();
+setInterval(renderHero, 60000);
+
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
-
-function sortMatches(a,b){
-  if (a.date && b.date) return parseDate(a)-parseDate(b);
-  if (a.date) return -1; if (b.date) return 1;
-  const ra = Number((a.round.match(/\d+/)||['999'])[0]); const rb = Number((b.round.match(/\d+/)||['999'])[0]);
-  return ra-rb;
-}
-
-function renderCalendar(){
-  const future = filtered().filter(m=>m.status!=='FT').sort(sortMatches);
-  let html = section('Próximos jogos','Datas e horas podem mudar; as que ainda não são oficiais aparecem como “por confirmar”.', future);
-  const leagueVisible = state.competition === 'all' || state.competition === 'liga';
-  if (leagueVisible && !state.search) {
-    html += `<div class="section-head"><div><h2>Calendário completo da Liga</h2><p>Emparelhamentos das 34 jornadas; várias datas ainda não estão fechadas.</p></div></div>
-      <div class="notice">A ordem dos adversários é oficial. Quando a data/hora ainda não está confirmada, a app não inventa um horário.</div>
-      <div class="rounds">${leagueRounds.map(r => roundRow(r)).join('')}</div>`;
-  }
-  viewRoot.innerHTML = html;
-}
-
-function roundRow(r){
-  const known = state.matches.find(m => m.competition==='liga' && Number((m.round.match(/\d+/)||[0])[0]) === r.round);
-  const date = known ? dateLabel(known) : 'Data por confirmar';
-  return `<div class="round"><span class="round-number">J${r.round}</span><span class="round-fixture">${escapeHtml(r.home)} <span style="color:#666">—</span> ${escapeHtml(r.away)}</span><span class="round-date">${escapeHtml(date)}</span></div>`;
-}
-
-function renderResults(){
-  const results = filtered().filter(m=>m.status==='FT').sort((a,b)=>parseDate(b)-parseDate(a));
-  viewRoot.innerHTML = section('Resultados','Resultados oficiais registados na app.', results);
-}
-
-function renderCompetitions(){
-  const cards = competitions.filter(c=>state.competition==='all'||c.id===state.competition).filter(c=>!state.search || normalize(c.name).includes(normalize(state.search))).map(c=>{
-    const ms = state.matches.filter(m=>m.competition===c.id && m.status==='FT');
-    const wins=ms.filter(m=>resultLetter(m)==='W').length, draws=ms.filter(m=>resultLetter(m)==='D').length, losses=ms.filter(m=>resultLetter(m)==='L').length;
-    return `<article class="competition-card">
-      <div class="competition-card-top"><div><h3>${escapeHtml(c.name)}</h3><p>${escapeHtml(c.detail)}</p></div><div class="comp-icon">${c.icon}</div></div>
-      <div class="comp-stats"><div class="comp-stat"><span>Jogos</span><strong>${ms.length}</strong></div><div class="comp-stat"><span>V-E-D</span><strong>${wins}-${draws}-${losses}</strong></div><div class="comp-stat"><span>Golos</span><strong>${ms.reduce((s,m)=>s+(m.home===BENFICA?m.hs:m.as),0)}</strong></div></div>
-      <span class="comp-status">${escapeHtml(c.status)}</span>
-    </article>`;
-  }).join('');
-  viewRoot.innerHTML = `<div class="section-head"><div><h2>Competições 2026/27</h2><p>Estado atual das provas da equipa principal.</p></div></div><div class="competition-grid">${cards || '<div class="empty">Sem competições para mostrar.</div>'}</div>`;
-}
-
-function render(){
-  renderHero(); renderSummary();
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.view===state.view));
-  if (state.view==='overview') renderOverview();
-  if (state.view==='calendar') renderCalendar();
-  if (state.view==='results') renderResults();
-  if (state.view==='competitions') renderCompetitions();
-}
-
-function escapeHtml(value){ return String(value ?? '').replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c])); }
-
-function downloadICS(match){
-  if (!match.date) return toast('Este jogo ainda não tem data confirmada.');
-  const start = toICSDate(match.date, match.time || '12:00');
-  const endDate = new Date(`${match.date}T${match.time || '12:00'}:00`); endDate.setHours(endDate.getHours()+2);
-  const end = toICSDateObj(endDate);
-  const title = `${match.home} vs ${match.away}`;
-  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Benfica Match Center//PT','BEGIN:VEVENT',`UID:${match.id}@benfica-match-center`,`DTSTAMP:${toICSDateObj(new Date())}`,`DTSTART:${start}`,`DTEND:${end}`,`SUMMARY:${icsEscape(title)}`,`LOCATION:${icsEscape(match.venue||'')}`,`DESCRIPTION:${icsEscape(comp(match.competition).name+' · '+match.round)}`,'END:VEVENT','END:VCALENDAR'];
-  const blob = new Blob([lines.join('\r\n')], {type:'text/calendar;charset=utf-8'});
-  const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`${match.date}-${slug(title)}.ics`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),500);
-}
-function toICSDate(date,time){ return `${date.replaceAll('-','')}T${time.replace(':','')}00`; }
-function toICSDateObj(d){ return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''); }
-function icsEscape(s){ return String(s).replace(/\\/g,'\\\\').replace(/,/g,'\\,').replace(/;/g,'\\;').replace(/\n/g,'\\n'); }
-function slug(s){ return normalize(s).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
-function toast(msg){ const el=document.createElement('div'); el.className='toast'; el.textContent=msg; document.body.appendChild(el); setTimeout(()=>el.remove(),2600); }
-
-function mergeMatches(base, live){
-  const map = new Map(base.map(m=>[`${m.date}|${normalize(m.home)}|${normalize(m.away)}`,m]));
-  for (const m of live) {
-    const key=`${m.date}|${normalize(m.home)}|${normalize(m.away)}`;
-    if (map.has(key)) Object.assign(map.get(key),m,{source:'live'}); else if(m.date) base.push({...m,source:'live'});
-  }
-  return base;
-}
-
-async function refreshLive(){
-  const btn=$('#refreshBtn'); btn.classList.add('loading');
-  $('#dataStatus').textContent='A tentar atualizar…';
-  try {
-    // Fonte pública opcional. Se estiver indisponível, a app mantém os dados oficiais locais.
-    const teamRes = await fetch('https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=Benfica', {cache:'no-store'});
-    if (!teamRes.ok) throw new Error('team');
-    const teamData = await teamRes.json();
-    const team = (teamData.teams||[]).find(t=>normalize(t.strTeam)==='benfica' || normalize(t.strTeam).includes('benfica'));
-    if (!team?.idTeam) throw new Error('id');
-    const [lastRes,nextRes] = await Promise.all([
-      fetch(`https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=${team.idTeam}`,{cache:'no-store'}),
-      fetch(`https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id=${team.idTeam}`,{cache:'no-store'})
-    ]);
-    const events=[...((await lastRes.json()).results||[]),...((await nextRes.json()).events||[])];
-    if (!events.length) throw new Error('events');
-    const live=events.map(fromSportsDb).filter(Boolean);
-    state.matches=mergeMatches(structuredClone(baselineMatches),live);
-    localStorage.setItem('benfica-live-matches-v1',JSON.stringify(live));
-    state.dataLabel=`Atualizado online · ${new Intl.DateTimeFormat('pt-PT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date())}`;
-    toast('Dados online atualizados.');
-  } catch(e) {
-    state.dataLabel='Fonte online indisponível · a usar dados verificados';
-    toast('Não foi possível atualizar online. Mantive os dados verificados.');
-  } finally { btn.classList.remove('loading'); render(); }
-}
-
-function fromSportsDb(e){
-  let home=e.strHomeTeam, away=e.strAwayTeam; if(!home||!away||!e.dateEvent) return null;
-  if(!normalize(home+' '+away).includes('benfica')) return null;
-  if (normalize(home).includes('benfica')) home = BENFICA;
-  if (normalize(away).includes('benfica')) away = BENFICA;
-  const cname=normalize(e.strLeague||'');
-  const competition = cname.includes('europa') ? 'europa' : cname.includes('primeira')||cname.includes('liga portugal') ? 'liga' : cname.includes('taca da liga') ? 'taca-liga' : cname.includes('taca')||cname.includes('cup') ? 'taca-portugal' : 'liga';
-  const finished = e.intHomeScore !== null && e.intHomeScore !== '' && e.intAwayScore !== null && e.intAwayScore !== '';
-  return {
-    id:`sportsdb-${e.idEvent||Math.random().toString(36).slice(2)}`,
-    competition,
-    round:e.intRound ? `Jornada ${e.intRound}` : (e.strEventAlternate||e.strLeague||'Jogo'),
-    date:e.dateEvent,
-    time:(e.strTime||'').slice(0,5)||null,
-    home, away,
-    hs:finished?Number(e.intHomeScore):null,
-    as:finished?Number(e.intAwayScore):null,
-    status:finished?'FT':'NS',
-    venue:e.strVenue||null
-  };
-}
-
-competitionFilter.innerHTML += competitions.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-competitionFilter.addEventListener('change',e=>{state.competition=e.target.value;render();});
-searchInput.addEventListener('input',e=>{state.search=e.target.value;render();});
-document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{state.view=btn.dataset.view;render();}));
-document.addEventListener('click',e=>{ const id=e.target?.dataset?.calendarId; if(id){ const m=state.matches.find(x=>x.id===id); if(m) downloadICS(m); }});
-$('#refreshBtn').addEventListener('click',refreshLive);
-setInterval(()=>{ const c=$('#countdown'); const m=knownUpcoming()[0]; if(c&&m) c.textContent=`⏱️ ${countdownText(m)}`; },60000);
-
-if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('./sw.js').catch(()=>{});
-render();

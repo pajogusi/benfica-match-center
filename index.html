@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#b20d20" />
-  <meta name="description" content="Calendário, resultados e competições da equipa principal de futebol do SL Benfica." />
+  <meta name="description" content="Próximo jogo, competições, classificações, calendários e resultados do SL Benfica." />
   <title>Benfica Match Center</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/benfica-b.svg" type="image/svg+xml" />
@@ -13,83 +13,56 @@
 <body>
   <div class="app-shell">
     <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true">B</div>
-        <div>
-          <p class="eyebrow">Futebol · Equipa Principal</p>
-          <h1>Benfica Match Center</h1>
-        </div>
-      </div>
+      <button class="brand brand-button" id="homeButton" type="button" aria-label="Voltar ao início">
+        <span class="brand-mark" aria-hidden="true">B</span>
+        <span class="brand-copy">
+          <span class="eyebrow">Futebol · Equipa Principal</span>
+          <strong>Benfica Match Center</strong>
+        </span>
+      </button>
       <div class="header-actions">
-        <span id="dataStatus" class="status-chip">Dados verificados</span>
-        <button id="refreshBtn" class="icon-button" type="button" title="Tentar atualizar dados" aria-label="Tentar atualizar dados">↻</button>
+        <span class="season-chip">Época 2026/27</span>
+        <span class="status-chip" id="dataStatus">Dados verificados · 22/08/2026</span>
       </div>
     </header>
 
     <main>
-      <section id="nextMatchHero" class="hero-card" aria-live="polite"></section>
+      <section id="homeView">
+        <section id="nextMatchHero" class="hero-card" aria-live="polite"></section>
 
-      <section class="summary-grid" aria-label="Resumo da época">
-        <article class="summary-card">
-          <span class="summary-label">Época</span>
-          <strong>2026/27</strong>
-        </article>
-        <article class="summary-card">
-          <span class="summary-label">Jogos oficiais</span>
-          <strong id="officialCount">—</strong>
-        </article>
-        <article class="summary-card">
-          <span class="summary-label">Vitórias</span>
-          <strong id="winsCount">—</strong>
-        </article>
-        <article class="summary-card">
-          <span class="summary-label">Golos</span>
-          <strong id="goalsCount">—</strong>
-        </article>
+        <div class="section-head competition-heading">
+          <div>
+            <span class="section-kicker">Época 2026/27</span>
+            <h2>Competições</h2>
+            <p>Seleciona uma prova para ver classificação/estado, calendário e últimos resultados.</p>
+          </div>
+        </div>
+        <section id="competitionGrid" class="competition-grid" aria-label="Competições do Benfica"></section>
       </section>
 
-      <nav class="tabs" aria-label="Navegação principal">
-        <button class="tab active" data-view="overview" type="button">Visão geral</button>
-        <button class="tab" data-view="calendar" type="button">Calendário</button>
-        <button class="tab" data-view="results" type="button">Resultados</button>
-        <button class="tab" data-view="competitions" type="button">Competições</button>
-      </nav>
-
-      <section class="toolbar">
-        <label class="select-wrap">
-          <span>Competição</span>
-          <select id="competitionFilter">
-            <option value="all">Todas</option>
-          </select>
-        </label>
-        <label class="search-wrap">
-          <span>Pesquisar adversário</span>
-          <input id="searchInput" type="search" placeholder="Ex.: Porto, Sporting, Aarhus…" autocomplete="off" />
-        </label>
+      <section id="competitionView" class="competition-view hidden" aria-live="polite">
+        <button id="backButton" class="back-button" type="button">← Todas as competições</button>
+        <section id="competitionHeader" class="competition-detail-header"></section>
+        <nav id="detailTabs" class="detail-tabs" aria-label="Detalhes da competição">
+          <button class="detail-tab active" data-detail="status" type="button">Classificação / Estado</button>
+          <button class="detail-tab" data-detail="calendar" type="button">Calendário e resultados</button>
+        </nav>
+        <section id="competitionDetailRoot" class="detail-root"></section>
       </section>
-
-      <section id="viewRoot" class="view-root"></section>
     </main>
 
     <footer>
       <div>
         <strong>Benfica Match Center</strong>
-        <span>Projeto não oficial · dados-base verificados em 22/08/2026.</span>
+        <span>Projeto não oficial. Horários sujeitos a alteração pelos organizadores.</span>
       </div>
       <div class="footer-links">
-        <a href="https://www.slbenfica.pt/pt-pt/futebol/calendario" target="_blank" rel="noreferrer">Calendário oficial</a>
-        <a href="https://benfica.ecal.com/" target="_blank" rel="noreferrer">Sincronizar calendário</a>
+        <a href="https://www.slbenfica.pt/pt-pt/futebol/calendario" target="_blank" rel="noreferrer">Calendário oficial SL Benfica</a>
+        <a href="https://www.ligaportugal.pt/" target="_blank" rel="noreferrer">Liga Portugal</a>
+        <a href="https://pt.uefa.com/" target="_blank" rel="noreferrer">UEFA</a>
       </div>
     </footer>
   </div>
-
-  <template id="matchCardTemplate">
-    <article class="match-card">
-      <div class="match-meta"></div>
-      <div class="match-teams"></div>
-      <div class="match-footer"></div>
-    </article>
-  </template>
 
   <script src="app.js"></script>
 </body>

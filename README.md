@@ -1,35 +1,15 @@
 # Benfica Match Center
 
-Web app estática e responsiva para acompanhar a equipa principal de futebol do SL Benfica.
+Web app não oficial para acompanhar a equipa principal de futebol do SL Benfica na época 2026/27.
 
-## Inclui
-- Próximo jogo com contagem decrescente
-- Resultados da época 2026/27
-- Próximos jogos
-- Filtro por competição e adversário
-- Calendário das 34 jornadas da Liga Portugal
-- Estado das competições
-- Exportação de cada jogo para `.ics`
-- PWA/offline quando alojada em HTTPS ou localhost
-- Tentativa opcional de atualização através de uma API pública, mantendo dados locais se a API falhar
+## Estrutura da versão 2
 
-## Abrir
-### Forma mais simples
-Abra `benfica.html` diretamente no browser (versão de ficheiro único).
+- abertura centrada no próximo jogo;
+- cartões de todas as principais competições relevantes da época;
+- estados: Em curso, Qualificado, Acesso condicionado e Não qualificado;
+- cada cartão abre uma área própria com Classificação/Estado e Calendário/Resultados;
+- tabela da Liga Portugal;
+- percurso das provas a eliminar sem inventar uma classificação por pontos;
+- responsiva e preparada para GitHub Pages/PWA.
 
-### Versão PWA
-Na pasta do projeto, execute:
-
-```bash
-python3 -m http.server 8080
-```
-
-Depois abra `http://localhost:8080`.
-
-## GitHub Pages
-Pode publicar toda a pasta no GitHub Pages sem processo de build.
-
-## Dados
-Os dados-base foram verificados em fontes oficiais do SL Benfica em 22/08/2026. As datas sem confirmação ficam explicitamente como “por confirmar”.
-
-Projeto não oficial. Não utiliza o emblema oficial do clube.
+Os dados-base foram verificados em 22/08/2026 em fontes oficiais do SL Benfica, Liga Portugal, FPF e UEFA. Horários e sorteios podem sofrer alterações.
