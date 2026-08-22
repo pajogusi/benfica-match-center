@@ -7,6 +7,6 @@
   "background_color": "#08080a",
   "theme_color": "#b20d20",
   "icons": [
-    {"src":"icons/benfica-b.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+    {"src":"icons/benfica-crest.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}
   ]
 }

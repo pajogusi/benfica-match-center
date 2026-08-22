@@ -251,9 +251,21 @@ function renderHero() {
       <button class="hero-comp-link" type="button" data-open-comp="${c.id}">${escapeHtml(c.name)} →</button>
     </div>
     <div class="hero-main">
-      <div class="hero-team"><span>Casa</span><strong>${escapeHtml(m.home)}</strong></div>
+      <div class="hero-team">
+        <span>Casa</span>
+        <div class="hero-team-name">
+          ${m.home===BENFICA?'<img class="hero-team-crest" src="icons/benfica-crest.svg" alt="" />':''}
+          <strong>${escapeHtml(m.home)}</strong>
+        </div>
+      </div>
       <div class="hero-vs">VS</div>
-      <div class="hero-team away"><span>Fora</span><strong>${escapeHtml(m.away)}</strong></div>
+      <div class="hero-team away">
+        <span>Fora</span>
+        <div class="hero-team-name">
+          ${m.away===BENFICA?'<img class="hero-team-crest" src="icons/benfica-crest.svg" alt="" />':''}
+          <strong>${escapeHtml(m.away)}</strong>
+        </div>
+      </div>
     </div>
     <div class="hero-info">
       <span class="hero-pill">📅 ${escapeHtml(dateText(m,true))}${m.note ? ` · ${escapeHtml(m.note)}` : ''}</span>
@@ -349,7 +361,7 @@ function renderLeagueTable() {
         <thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead>
         <tbody>${leagueTable.map((r,i)=>{
           const [team,j,v,e,d,gm,gs,pts]=r; const gd=gm-gs;
-          return `<tr class="${team===BENFICA?'benfica-row':''}"><td>${i+1}</td><td>${escapeHtml(team)}</td><td>${j}</td><td>${v}</td><td>${e}</td><td>${d}</td><td>${gm}</td><td>${gs}</td><td>${gd>0?'+':''}${gd}</td><td><strong>${pts}</strong></td></tr>`;
+          return `<tr class="${team===BENFICA?'benfica-row':''}"><td>${i+1}</td><td><span class="table-team">${team===BENFICA?'<img class="mini-team-crest" src="icons/benfica-crest.svg" alt="" />':''}<span>${escapeHtml(team)}</span></span></td><td>${j}</td><td>${v}</td><td>${e}</td><td>${d}</td><td>${gm}</td><td>${gs}</td><td>${gd>0?'+':''}${gd}</td><td><strong>${pts}</strong></td></tr>`;
         }).join('')}</tbody>
       </table>
     </div>`;
@@ -384,9 +396,15 @@ function matchCard(m) {
       <span>${escapeHtml(dateText(m))}</span>
     </div>
     <div class="match-teams">
-      <strong class="${m.home===BENFICA?'benfica-team':''}">${escapeHtml(m.home)}</strong>
+      <strong class="team-cell ${m.home===BENFICA?'benfica-team':''}">
+        ${m.home===BENFICA?'<img class="mini-team-crest" src="icons/benfica-crest.svg" alt="" />':''}
+        <span>${escapeHtml(m.home)}</span>
+      </strong>
       <span class="score ${m.status!=='FT'?'pending':''}">${escapeHtml(scoreText(m))}</span>
-      <strong class="right ${m.away===BENFICA?'benfica-team':''}">${escapeHtml(m.away)}</strong>
+      <strong class="team-cell right ${m.away===BENFICA?'benfica-team':''}">
+        ${m.away===BENFICA?'<img class="mini-team-crest" src="icons/benfica-crest.svg" alt="" />':''}
+        <span>${escapeHtml(m.away)}</span>
+      </strong>
     </div>
     <div class="match-bottom">
       <span>${escapeHtml(m.note || m.venue || 'Local por confirmar')}</span>
