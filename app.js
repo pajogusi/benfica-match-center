@@ -1,6 +1,30 @@
 const BENFICA = 'SL Benfica';
 const DATA_DATE = '22/08/2026';
 
+const CLUB_CRESTS = {
+  "SL Benfica": "icons/benfica-crest.svg",
+  "Arouca": "icons/clubs/arouca.svg",
+  "FC Porto": "icons/clubs/fc-porto.svg",
+  "Marítimo": "icons/clubs/maritimo.svg",
+  "Nacional": "icons/clubs/nacional.svg",
+  "Sporting CP": "icons/clubs/sporting-cp.svg",
+  "Santa Clara": "icons/clubs/santa-clara.svg",
+  "Gil Vicente": "icons/clubs/gil-vicente.svg",
+  "Estrela Amadora": "icons/clubs/estrela-amadora.svg",
+  "SC Braga": "icons/clubs/sc-braga.svg",
+  "Académico de Viseu": "icons/clubs/academico-de-viseu.svg",
+  "Famalicão": "icons/clubs/famalicao.svg",
+  "Alverca": "icons/clubs/alverca.svg",
+  "Estoril": "icons/clubs/estoril.svg",
+  "Moreirense": "icons/clubs/moreirense.svg",
+  "Vitória SC": "icons/clubs/vitoria-sc.svg",
+  "Rio Ave": "icons/clubs/rio-ave.svg",
+  "Casa Pia": "icons/clubs/casa-pia.svg",
+  "St. Gallen": "icons/clubs/st-gallen.svg",
+  "Heart of Midlothian": "icons/clubs/heart-of-midlothian.svg",
+  "AGF Aarhus": "icons/clubs/agf-aarhus.svg"
+};
+
 const competitionData = [
   {
     id: 'liga',
@@ -196,6 +220,13 @@ function escapeHtml(v='') {
 
 function comp(id) { return competitionData.find(c => c.id === id); }
 
+function clubCrestImg(team, cls='mini-team-crest') {
+  const src = CLUB_CRESTS[team];
+  if (!src) return '';
+  return `<img class="${cls}" src="${src}" alt="Emblema de ${escapeHtml(team)}" loading="lazy" />`;
+}
+
+
 function parseDate(m) {
   if (!m.date) return null;
   return new Date(`${m.date}T${m.time || '12:00'}:00`);
@@ -254,7 +285,7 @@ function renderHero() {
       <div class="hero-team">
         <span>Casa</span>
         <div class="hero-team-name">
-          ${m.home===BENFICA?'<img class="hero-team-crest" src="icons/benfica-crest.svg" alt="" />':''}
+          ${clubCrestImg(m.home,'hero-team-crest')}
           <strong>${escapeHtml(m.home)}</strong>
         </div>
       </div>
@@ -262,7 +293,7 @@ function renderHero() {
       <div class="hero-team away">
         <span>Fora</span>
         <div class="hero-team-name">
-          ${m.away===BENFICA?'<img class="hero-team-crest" src="icons/benfica-crest.svg" alt="" />':''}
+          ${clubCrestImg(m.away,'hero-team-crest')}
           <strong>${escapeHtml(m.away)}</strong>
         </div>
       </div>
@@ -361,7 +392,7 @@ function renderLeagueTable() {
         <thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead>
         <tbody>${leagueTable.map((r,i)=>{
           const [team,j,v,e,d,gm,gs,pts]=r; const gd=gm-gs;
-          return `<tr class="${team===BENFICA?'benfica-row':''}"><td>${i+1}</td><td><span class="table-team">${team===BENFICA?'<img class="mini-team-crest" src="icons/benfica-crest.svg" alt="" />':''}<span>${escapeHtml(team)}</span></span></td><td>${j}</td><td>${v}</td><td>${e}</td><td>${d}</td><td>${gm}</td><td>${gs}</td><td>${gd>0?'+':''}${gd}</td><td><strong>${pts}</strong></td></tr>`;
+          return `<tr class="${team===BENFICA?'benfica-row':''}"><td>${i+1}</td><td><span class="table-team">${clubCrestImg(team,'mini-team-crest')}<span>${escapeHtml(team)}</span></span></td><td>${j}</td><td>${v}</td><td>${e}</td><td>${d}</td><td>${gm}</td><td>${gs}</td><td>${gd>0?'+':''}${gd}</td><td><strong>${pts}</strong></td></tr>`;
         }).join('')}</tbody>
       </table>
     </div>`;
@@ -397,12 +428,12 @@ function matchCard(m) {
     </div>
     <div class="match-teams">
       <strong class="team-cell ${m.home===BENFICA?'benfica-team':''}">
-        ${m.home===BENFICA?'<img class="mini-team-crest" src="icons/benfica-crest.svg" alt="" />':''}
+        ${clubCrestImg(m.home,'mini-team-crest')}
         <span>${escapeHtml(m.home)}</span>
       </strong>
       <span class="score ${m.status!=='FT'?'pending':''}">${escapeHtml(scoreText(m))}</span>
       <strong class="team-cell right ${m.away===BENFICA?'benfica-team':''}">
-        ${m.away===BENFICA?'<img class="mini-team-crest" src="icons/benfica-crest.svg" alt="" />':''}
+        ${clubCrestImg(m.away,'mini-team-crest')}
         <span>${escapeHtml(m.away)}</span>
       </strong>
     </div>

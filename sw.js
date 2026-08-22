@@ -1,5 +1,5 @@
-const CACHE = 'benfica-match-center-v3-crest';
-const ASSETS = ['./','./index.html','./benfica.html','./styles.css','./app.js','./manifest.webmanifest','./icons/benfica-crest.svg'];
+const CACHE = 'benfica-match-center-v5-club-crests';
+const ASSETS = ["./", "./index.html", "./benfica.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icons/benfica-crest.svg", "./icons/clubs/academico-de-viseu.svg", "./icons/clubs/agf-aarhus.svg", "./icons/clubs/alverca.svg", "./icons/clubs/arouca.svg", "./icons/clubs/casa-pia.svg", "./icons/clubs/estoril.svg", "./icons/clubs/estrela-amadora.svg", "./icons/clubs/famalicao.svg", "./icons/clubs/fc-porto.svg", "./icons/clubs/gil-vicente.svg", "./icons/clubs/heart-of-midlothian.svg", "./icons/clubs/maritimo.svg", "./icons/clubs/moreirense.svg", "./icons/clubs/nacional.svg", "./icons/clubs/rio-ave.svg", "./icons/clubs/santa-clara.svg", "./icons/clubs/sc-braga.svg", "./icons/clubs/sl-benfica.svg", "./icons/clubs/sporting-cp.svg", "./icons/clubs/st-gallen.svg", "./icons/clubs/vitoria-sc.svg"];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS))));
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))));
 self.addEventListener('fetch', event => {
