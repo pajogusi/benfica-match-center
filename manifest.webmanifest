@@ -1,0 +1,13 @@
+{
+  "name": "Benfica Match Center",
+  "short_name": "Benfica",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#b20d20",
+  "lang": "pt-PT",
+  "description": "Calendário, resultados e competições do futebol do Benfica.",
+  "icons": [
+    {"src":"icons/benfica-b.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
