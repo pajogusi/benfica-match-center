@@ -413,37 +413,38 @@ footer strong { color: #ddd; margin-right: 7px; }
 }
 
 
-/* GOATCOUNTER VISITOR COUNTER V1 */
+
+
+/* GOATCOUNTER COMPACT V2 */
 .goatcounter-box {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   margin-left: auto;
-  padding: 6px 10px;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 10px;
-  background: rgba(255,255,255,.025);
+  padding: 7px 11px;
+  min-height: 30px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 999px;
+  background: rgba(255,255,255,.035);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
   white-space: nowrap;
 }
 
 .goatcounter-label {
-  color: rgba(255,255,255,.50);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: .09em;
+  color: rgba(255,255,255,.48);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .11em;
   text-transform: uppercase;
 }
 
 .goatcounter-value {
-  min-width: 22px;
-  color: #f3d8dc;
+  min-width: 14px;
+  color: #f2d1d6;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 950;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
-}
-
-.goatcounter-value > div {
-  display: inline !important;
 }
 
 @media (max-width: 760px) {
