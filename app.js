@@ -219,7 +219,7 @@ const matches = [
   {id:'uel-0608',competition:'europa',round:'3.ª pré-eliminatória · 1.ª mão',date:'2026-08-06',time:'20:00',home:BENFICA,away:'Heart of Midlothian',hs:6,as:1,status:'FT',venue:'Estádio da Luz'},
   {id:'uel-1308',competition:'europa',round:'3.ª pré-eliminatória · 2.ª mão',date:'2026-08-13',time:'19:45',home:'Heart of Midlothian',away:BENFICA,hs:1,as:1,status:'FT',venue:'Tynecastle Park'},
   {id:'uel-2008',competition:'europa',round:'Play-off · 1.ª mão',date:'2026-08-20',time:'20:00',home:BENFICA,away:'AGF Aarhus',hs:3,as:1,status:'FT',venue:'Estádio da Luz'},
-  {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'19:00',home:'AGF Aarhus',away:BENFICA,status:'NS',venue:'Randers Stadion',note:'19:00 hora UK',tv:'Por confirmar'},
+  {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'19:00',kickoffUtc:'2026-08-27T18:00:00Z',home:'AGF Aarhus',away:BENFICA,status:'NS',venue:'Randers Stadion',note:'19:00 hora UK',tv:'Por confirmar'},
   {id:'allianz-qf',competition:'taca-liga',round:'Quartos de final',date:'2026-10-27',time:null,home:BENFICA,away:'Gil Vicente',status:'NS',venue:'Estádio da Luz'},
   {id:'tp-r4',competition:'taca-portugal',round:'4.ª eliminatória',date:null,time:null,home:BENFICA,away:'Adversário por sortear',status:'NS',venue:null,note:'Janela prevista: 21/22 novembro 2026'}
 ];
@@ -246,7 +246,8 @@ function clubCrestImg(team, cls='mini-team-crest') {
 
 
 function parseDate(m) {
-  if (!m.date) return null;
+  if (m?.kickoffUtc) return new Date(m.kickoffUtc);
+  if (!m?.date) return null;
   return new Date(`${m.date}T${m.time || '12:00'}:00`);
 }
 
@@ -322,13 +323,21 @@ function aggregateText(m) {
 function countdown(m) {
   const dt = parseDate(m);
   if (!dt) return 'Data por confirmar';
-  const diff = dt - new Date();
-  if (diff <= 0) return 'Hoje';
-  const days = Math.floor(diff/86400000);
-  const hours = Math.floor((diff%86400000)/3600000);
-  if (days) return `Faltam ${days}d ${hours}h`;
-  const mins = Math.floor((diff%3600000)/60000);
-  return `Faltam ${hours}h ${mins}m`;
+  if (!m.time && !m.kickoffUtc) return 'Hora por confirmar';
+
+  const diffMs = dt.getTime() - Date.now();
+  if (diffMs <= 0) return 'Jogo iniciado';
+
+  const totalSeconds = Math.floor(diffMs / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const pad = n => String(n).padStart(2, '0');
+
+  if (days > 0) return `${days}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+  if (hours > 0) return `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+  return `${pad(minutes)}m ${pad(seconds)}s`;
 }
 
 function renderHero() {
@@ -428,9 +437,18 @@ function renderHero() {
       <div class="next-meta-item"><span>Estádio</span><strong>${escapeHtml(venue)}</strong></div>
       <div class="next-meta-item next-meta-tv"><span>Canal TV</span><strong>${escapeHtml(tvChannel(m))}</strong></div>
       <div class="next-meta-item next-meta-aggregate"><span>Agregado</span><strong>${escapeHtml(aggregateText(m))}</strong></div>
-      <div class="next-meta-item next-meta-countdown"><span>Contagem</span><strong>${escapeHtml(countdown(m))}</strong></div>
+      <div class="next-meta-item next-meta-countdown"><span>Contagem</span><strong id="nextMatchCountdown">${escapeHtml(countdown(m))}</strong></div>
     </div>
   `;
+}
+
+
+function updateLiveCountdown() {
+  const el = document.getElementById('nextMatchCountdown');
+  if (!el) return;
+  const m = upcomingMatches()[0];
+  if (!m) return;
+  el.textContent = countdown(m);
 }
 
 function renderCompetitionCards() {
@@ -596,6 +614,7 @@ window.addEventListener('popstate', routeFromHash);
 renderHero();
 renderCompetitionCards();
 routeFromHash();
+setInterval(updateLiveCountdown, 1000);
 setInterval(renderHero, 60000);
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {

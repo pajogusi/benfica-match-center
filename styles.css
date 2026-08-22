@@ -389,3 +389,11 @@ footer strong { color: #ddd; margin-right: 7px; }
     font-size: 12px;
   }
 }
+
+
+/* DYNAMIC COUNTDOWN PATCH v1 */
+.next-meta-countdown strong {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  letter-spacing: .01em;
+}
