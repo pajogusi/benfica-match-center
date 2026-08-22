@@ -371,3 +371,21 @@ footer strong { color: #ddd; margin-right: 7px; }
   .next-match-meta { margin-top: 23px; }
   .next-meta-item { padding: 11px 10px; }
 }
+
+
+/* TV + AGGREGATE PATCH v1 */
+.next-meta-tv strong {
+  color: #fff;
+}
+
+.next-meta-aggregate strong {
+  color: #ffd2d8;
+  font-weight: 900;
+}
+
+@media (max-width: 780px) {
+  .next-meta-tv strong,
+  .next-meta-aggregate strong {
+    font-size: 12px;
+  }
+}

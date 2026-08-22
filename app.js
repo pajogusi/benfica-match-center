@@ -210,7 +210,7 @@ const leagueCalendar = [
 Object.assign(leagueCalendar[0], {date:'2026-08-09', time:'20:30', hs:2, as:2, status:'FT', venue:'Estádio da Luz'});
 Object.assign(leagueCalendar[1], {date:'2026-08-17', time:'20:15', hs:0, as:7, status:'FT', venue:'Estádio Municipal de Rio Maior'});
 Object.assign(leagueCalendar[2], {date:'2026-09-09', time:'20:15', venue:'Parque Joaquim de Almeida Freitas'});
-Object.assign(leagueCalendar[3], {date:'2026-08-31', time:null, venue:'Estádio da Luz'});
+Object.assign(leagueCalendar[3], {date:'2026-08-31', time:null, venue:'Estádio da Luz', tv:'BTV'});
 
 const matches = [
   ...leagueCalendar,
@@ -219,7 +219,7 @@ const matches = [
   {id:'uel-0608',competition:'europa',round:'3.ª pré-eliminatória · 1.ª mão',date:'2026-08-06',time:'20:00',home:BENFICA,away:'Heart of Midlothian',hs:6,as:1,status:'FT',venue:'Estádio da Luz'},
   {id:'uel-1308',competition:'europa',round:'3.ª pré-eliminatória · 2.ª mão',date:'2026-08-13',time:'19:45',home:'Heart of Midlothian',away:BENFICA,hs:1,as:1,status:'FT',venue:'Tynecastle Park'},
   {id:'uel-2008',competition:'europa',round:'Play-off · 1.ª mão',date:'2026-08-20',time:'20:00',home:BENFICA,away:'AGF Aarhus',hs:3,as:1,status:'FT',venue:'Estádio da Luz'},
-  {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'19:00',home:'AGF Aarhus',away:BENFICA,status:'NS',venue:'Randers Stadion',note:'19:00 hora UK'},
+  {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'19:00',home:'AGF Aarhus',away:BENFICA,status:'NS',venue:'Randers Stadion',note:'19:00 hora UK',tv:'Por confirmar'},
   {id:'allianz-qf',competition:'taca-liga',round:'Quartos de final',date:'2026-10-27',time:null,home:BENFICA,away:'Gil Vicente',status:'NS',venue:'Estádio da Luz'},
   {id:'tp-r4',competition:'taca-portugal',round:'4.ª eliminatória',date:null,time:null,home:BENFICA,away:'Adversário por sortear',status:'NS',venue:null,note:'Janela prevista: 21/22 novembro 2026'}
 ];
@@ -272,6 +272,51 @@ function resultLabel(r) { return r === 'W' ? 'Vitória' : r === 'L' ? 'Derrota' 
 function upcomingMatches() {
   const now = new Date();
   return matches.filter(m => m.status !== 'FT' && m.date && parseDate(m) > new Date(now.getTime() - 4*3600000)).sort((a,b)=>parseDate(a)-parseDate(b));
+}
+
+function tvChannel(m) {
+  return m.tv || 'Por confirmar';
+}
+
+function aggregateText(m) {
+  const round = String(m.round || '');
+  const isSecondLeg = /2\.ª\s*mão/i.test(round);
+  const isFirstLeg = /1\.ª\s*mão/i.test(round);
+
+  if (!isSecondLeg && !isFirstLeg) return 'Não aplicável';
+
+  const opponent = m.home === BENFICA ? m.away : m.home;
+  if (!opponent || opponent === 'Adversário por sortear') return 'Por confirmar';
+
+  const stage = round
+    .replace(/\s*·\s*[12]\.ª\s*mão/gi, '')
+    .trim();
+
+  const relevant = matches.filter(x => {
+    if (x.competition !== m.competition || x.status !== 'FT') return false;
+    const xStage = String(x.round || '')
+      .replace(/\s*·\s*[12]\.ª\s*mão/gi, '')
+      .trim();
+    if (xStage !== stage) return false;
+    const teams = [x.home, x.away];
+    return teams.includes(BENFICA) && teams.includes(opponent);
+  });
+
+  if (!relevant.length) return isFirstLeg ? '0–0' : 'Por confirmar';
+
+  let benficaGoals = 0;
+  let opponentGoals = 0;
+  for (const x of relevant) {
+    if (x.home === BENFICA) {
+      benficaGoals += Number(x.hs || 0);
+      opponentGoals += Number(x.as || 0);
+    } else {
+      benficaGoals += Number(x.as || 0);
+      opponentGoals += Number(x.hs || 0);
+    }
+  }
+
+  return `Benfica ${benficaGoals}–${opponentGoals}`;
 }
 
 function countdown(m) {
@@ -381,8 +426,8 @@ function renderHero() {
 
     <div class="next-match-meta">
       <div class="next-meta-item"><span>Estádio</span><strong>${escapeHtml(venue)}</strong></div>
-      <div class="next-meta-item"><span>Competição</span><strong>${escapeHtml(c.name)}</strong></div>
-      <div class="next-meta-item"><span>Início</span><strong>${escapeHtml(kickoff)}</strong></div>
+      <div class="next-meta-item next-meta-tv"><span>Canal TV</span><strong>${escapeHtml(tvChannel(m))}</strong></div>
+      <div class="next-meta-item next-meta-aggregate"><span>Agregado</span><strong>${escapeHtml(aggregateText(m))}</strong></div>
       <div class="next-meta-item next-meta-countdown"><span>Contagem</span><strong>${escapeHtml(countdown(m))}</strong></div>
     </div>
   `;
