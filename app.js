@@ -289,38 +289,101 @@ function countdown(m) {
 function renderHero() {
   const m = upcomingMatches()[0];
   const root = $('#nextMatchHero');
+
   if (!m) {
-    root.innerHTML = `<div class="hero-kicker">Próximo jogo</div><h2>A aguardar confirmação do próximo encontro</h2>`;
+    root.innerHTML = `
+      <div class="hero-empty-professional">
+        <span class="hero-kicker">Próximo jogo</span>
+        <h2>A aguardar confirmação do próximo encontro</h2>
+        <p>O painel será atualizado quando existir um novo jogo confirmado.</p>
+      </div>`;
     return;
   }
+
   const c = comp(m.competition);
+
+  const clubSlug = (team='') => String(team)
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/^-|-$/g,'');
+
+  const crest = (team, cls='next-club-crest') => {
+    if (!team || team === 'Adversário por sortear') return '';
+    const src = `icons/clubs/${clubSlug(team)}.svg`;
+    return `<img class="${cls}" src="${src}" alt="Emblema ${escapeHtml(team)}" onerror="this.style.display='none'" />`;
+  };
+
+  const competitionLogoMap = {
+    liga: 'icons/competitions/liga-portugal.svg',
+    'taca-portugal': 'icons/competitions/taca-portugal.svg',
+    'taca-liga': 'icons/competitions/taca-liga.png',
+    europa: 'icons/competitions/europa-league.svg',
+    champions: 'icons/competitions/champions-league.svg',
+    conference: 'icons/competitions/conference-league.svg',
+    supertaca: 'icons/competitions/supertaca-portugal.svg',
+    'uefa-supercup': 'icons/competitions/uefa-supercup.svg'
+  };
+
+  const competitionLogo = competitionLogoMap[c.id]
+    ? `<img class="next-competition-logo" src="${competitionLogoMap[c.id]}" alt="Logo ${escapeHtml(c.name)}" onerror="this.style.display='none'" />`
+    : '';
+
+  const dt = parseDate(m);
+  const dateOnly = dt
+    ? new Intl.DateTimeFormat('pt-PT', {
+        weekday: 'short', day: '2-digit', month: 'long', year: 'numeric'
+      }).format(dt)
+    : 'Data por confirmar';
+
+  const kickoff = m.time || 'Hora por confirmar';
+  const venue = m.venue || 'Local por confirmar';
+  const note = m.note ? `<span class="next-match-note">${escapeHtml(m.note)}</span>` : '';
+
   root.innerHTML = `
-    <div class="hero-topline">
-      <span class="hero-kicker">Próximo jogo</span>
-      <button class="hero-comp-link" type="button" data-open-comp="${c.id}">${escapeHtml(c.name)} →</button>
-    </div>
-    <div class="hero-main">
-      <div class="hero-team">
-        <span>Casa</span>
-        <div class="hero-team-name">
-          ${clubCrestImg(m.home,'hero-team-crest')}
-          <strong>${escapeHtml(m.home)}</strong>
-        </div>
+    <div class="hero-topline next-topline">
+      <div>
+        <span class="hero-kicker">Próximo jogo</span>
+        <span class="next-season-label">Época 2026/27</span>
       </div>
-      <div class="hero-vs">VS</div>
-      <div class="hero-team away">
-        <span>Fora</span>
-        <div class="hero-team-name">
-          ${clubCrestImg(m.away,'hero-team-crest')}
-          <strong>${escapeHtml(m.away)}</strong>
-        </div>
-      </div>
+      <button class="hero-comp-link next-comp-link" type="button" data-open-comp="${c.id}">
+        ${competitionLogo}
+        <span>${escapeHtml(c.name)}</span>
+        <b aria-hidden="true">→</b>
+      </button>
     </div>
-    <div class="hero-info">
-      <span class="hero-pill">📅 ${escapeHtml(dateText(m,true))}${m.note ? ` · ${escapeHtml(m.note)}` : ''}</span>
-      <span class="hero-pill">🏆 ${escapeHtml(m.round)}</span>
-      <span class="hero-pill">🏟️ ${escapeHtml(m.venue || 'Local por confirmar')}</span>
-      <span class="hero-pill">⏱️ ${escapeHtml(countdown(m))}</span>
+
+    <div class="next-match-board">
+      <section class="next-team next-team-home">
+        <span class="next-team-role">Casa</span>
+        <div class="next-crest-shell">${crest(m.home)}</div>
+        <strong>${escapeHtml(m.home)}</strong>
+      </section>
+
+      <section class="next-center">
+        <div class="next-center-competition">
+          ${competitionLogo}
+          <span>${escapeHtml(c.subtitle || c.name)}</span>
+        </div>
+        <time class="next-match-date" datetime="${escapeHtml(m.date || '')}">${escapeHtml(dateOnly)}</time>
+        <div class="next-kickoff">${escapeHtml(kickoff)}</div>
+        ${note}
+        <div class="next-vs">VS</div>
+        <span class="next-round">${escapeHtml(m.round)}</span>
+      </section>
+
+      <section class="next-team next-team-away">
+        <span class="next-team-role">Fora</span>
+        <div class="next-crest-shell">${crest(m.away)}</div>
+        <strong>${escapeHtml(m.away)}</strong>
+      </section>
+    </div>
+
+    <div class="next-match-meta">
+      <div class="next-meta-item"><span>Estádio</span><strong>${escapeHtml(venue)}</strong></div>
+      <div class="next-meta-item"><span>Competição</span><strong>${escapeHtml(c.name)}</strong></div>
+      <div class="next-meta-item"><span>Início</span><strong>${escapeHtml(kickoff)}</strong></div>
+      <div class="next-meta-item next-meta-countdown"><span>Contagem</span><strong>${escapeHtml(countdown(m))}</strong></div>
     </div>
   `;
 }
