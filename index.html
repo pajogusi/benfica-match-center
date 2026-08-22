@@ -9,6 +9,8 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/benfica-crest.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
+  <!-- GoatCounter: analytics + contador de visitas -->
+  <script data-goatcounter="https://pajogusi.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
   <div class="app-shell">
@@ -56,6 +58,10 @@
         <strong>Benfica Match Center</strong>
         <span>Projeto não oficial. Horários sujeitos a alteração pelos organizadores.</span>
       </div>
+      <div class="goatcounter-box" aria-label="Contador de visitas">
+        <span class="goatcounter-label">Visitas</span>
+        <span id="goatcounter-visits" class="goatcounter-value">—</span>
+      </div>
       <div class="footer-links">
         <a href="https://www.slbenfica.pt/pt-pt/futebol/calendario" target="_blank" rel="noreferrer">Calendário oficial SL Benfica</a>
         <a href="https://www.ligaportugal.pt/" target="_blank" rel="noreferrer">Liga Portugal</a>
@@ -65,5 +71,42 @@
   </div>
 
   <script src="app.js"></script>
+  <script>
+    (function () {
+      let tries = 0;
+      const maxTries = 80;
+
+      function showGoatCounter() {
+        tries += 1;
+
+        if (window.goatcounter && typeof window.goatcounter.visit_count === 'function') {
+          window.goatcounter.visit_count({
+            append: '#goatcounter-visits',
+            no_branding: true,
+            type: 'html',
+            attr: { title: 'Visitas desta página' },
+            style: `
+              div { display:inline; border:0; padding:0; margin:0; background:transparent; color:inherit; font:inherit; }
+              #gcvc-for { display:none; }
+              #gcvc-views { color:inherit; font:inherit; font-weight:850; }
+              #gcvc-by { display:none; }
+            `
+          });
+
+          const placeholder = document.querySelector('#goatcounter-visits');
+          if (placeholder) {
+            for (const node of Array.from(placeholder.childNodes)) {
+              if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() === '—') node.remove();
+            }
+          }
+          return;
+        }
+
+        if (tries < maxTries) setTimeout(showGoatCounter, 100);
+      }
+
+      window.addEventListener('load', showGoatCounter, { once: true });
+    })();
+  </script>
 </body>
 </html>

@@ -411,3 +411,44 @@ footer strong { color: #ddd; margin-right: 7px; }
 #dataStatus[data-online-mode="error"] {
   opacity: .72;
 }
+
+
+/* GOATCOUNTER VISITOR COUNTER V1 */
+.goatcounter-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  padding: 6px 10px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  background: rgba(255,255,255,.025);
+  white-space: nowrap;
+}
+
+.goatcounter-label {
+  color: rgba(255,255,255,.50);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.goatcounter-value {
+  min-width: 22px;
+  color: #f3d8dc;
+  font-size: 12px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.goatcounter-value > div {
+  display: inline !important;
+}
+
+@media (max-width: 760px) {
+  .goatcounter-box {
+    margin-left: 0;
+    align-self: flex-start;
+  }
+}
