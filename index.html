@@ -76,23 +76,40 @@
       const el = document.getElementById('goatcounter-visits');
       if (!el) return;
 
-      const path = '/benfica-match-center/';
-      const endpoint =
-        'https://pajogusi.goatcounter.com/counter/' +
-        encodeURIComponent(path) +
-        '.json';
+      let attempts = 0;
+      const maxAttempts = 40;
 
-      fetch(endpoint, { cache: 'no-store' })
-        .then(function (response) {
-          if (!response.ok) throw new Error('GoatCounter ' + response.status);
-          return response.json();
-        })
-        .then(function (data) {
-          el.textContent = data && data.count ? data.count : '0';
-        })
-        .catch(function () {
-          el.textContent = '—';
-        });
+      function loadVisitCount() {
+        attempts += 1;
+
+        if (!window.goatcounter || typeof window.goatcounter.get_data !== 'function') {
+          if (attempts < maxAttempts) {
+            window.setTimeout(loadVisitCount, 250);
+          }
+          return;
+        }
+
+        const data = window.goatcounter.get_data();
+        const path = data && data.p ? data.p : window.location.pathname;
+        const endpoint =
+          'https://pajogusi.goatcounter.com/counter/' +
+          encodeURIComponent(path) +
+          '.json';
+
+        fetch(endpoint, { cache: 'no-store' })
+          .then(function (response) {
+            if (!response.ok) throw new Error('GoatCounter ' + response.status);
+            return response.json();
+          })
+          .then(function (result) {
+            el.textContent = result && result.count ? result.count : '0';
+          })
+          .catch(function () {
+            el.textContent = '—';
+          });
+      }
+
+      loadVisitCount();
     })();
   </script>
 </body>
