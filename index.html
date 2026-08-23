@@ -72,6 +72,38 @@
 
   <script src="app.js"></script>
   <script>
+    // TV por país: só mostramos um canal quando existe confirmação fiável.
+    (function () {
+      if (typeof matches === 'undefined' || typeof renderHero !== 'function') return;
+
+      const aarhus = matches.find(function (m) { return m.id === 'uel-2708'; });
+      if (aarhus) {
+        aarhus.tvPT = 'Por confirmar';
+        aarhus.tvUK = 'Por confirmar';
+        aarhus.tvChecked = '23/08/2026';
+        aarhus.tvSource = 'SL Benfica / operadores oficiais';
+      }
+
+      const estoril = matches.find(function (m) {
+        return m.competition === 'liga' && m.date === '2026-08-31' && m.home === BENFICA;
+      });
+      if (estoril) {
+        estoril.tvPT = 'BTV';
+        estoril.tvUK = 'Por confirmar';
+        estoril.tvChecked = '23/08/2026';
+        estoril.tvSource = 'SL Benfica';
+      }
+
+      tvChannel = function (m) {
+        const pt = m.tvPT || m.tv || 'Por confirmar';
+        const uk = m.tvUK || 'Por confirmar';
+        return 'PT: ' + pt + ' · UK: ' + uk;
+      };
+
+      renderHero();
+    })();
+  </script>
+  <script>
     (function () {
       const el = document.getElementById('goatcounter-visits');
       if (!el) return;
