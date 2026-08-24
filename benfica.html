@@ -76,11 +76,21 @@
       const el = document.getElementById('goatcounter-visits');
       if (!el) return;
 
+      const cacheKey = 'benfica-match-center-visits';
       const path = '/benfica-match-center/';
       const endpoint =
         'https://pajogusi.goatcounter.com/counter/' +
         encodeURIComponent(path) +
         '.json';
+
+      let cached = '';
+      try {
+        cached = window.localStorage.getItem(cacheKey) || '';
+      } catch (error) {
+        cached = '';
+      }
+
+      if (cached) el.textContent = cached;
 
       fetch(endpoint, { cache: 'no-store' })
         .then(function (response) {
@@ -88,10 +98,28 @@
           return response.json();
         })
         .then(function (data) {
-          el.textContent = data && data.count ? data.count : '0';
+          const count = data && data.count ? String(data.count) : '';
+          if (!count) throw new Error('GoatCounter sem contagem');
+
+          el.textContent = count;
+          el.removeAttribute('title');
+          el.setAttribute('aria-label', count + ' visitas');
+
+          try {
+            window.localStorage.setItem(cacheKey, count);
+          } catch (error) {
+            // O contador continua visível mesmo sem armazenamento local.
+          }
         })
         .catch(function () {
-          el.textContent = '—';
+          if (!cached) {
+            el.textContent = 'bloqueado';
+            el.setAttribute(
+              'title',
+              'O bloqueio de privacidade impediu a leitura do contador.'
+            );
+            el.setAttribute('aria-label', 'Contador bloqueado pelo navegador');
+          }
         });
     })();
   </script>
