@@ -72,14 +72,13 @@
 
   <script src="app.js"></script>
   <script>
-    // TV por país: só mostramos um canal quando existe confirmação fiável.
+    // Canal TV confirmado em Portugal.
     (function () {
       if (typeof matches === 'undefined' || typeof renderHero !== 'function') return;
 
       const aarhus = matches.find(function (m) { return m.id === 'uel-2708'; });
       if (aarhus) {
         aarhus.tvPT = 'SPORT TV 5';
-        aarhus.tvUK = 'Por confirmar';
         aarhus.tvChecked = '26/08/2026';
         aarhus.tvSource = 'SPORT TV';
       }
@@ -89,15 +88,12 @@
       });
       if (estoril) {
         estoril.tvPT = 'BTV';
-        estoril.tvUK = 'Por confirmar';
         estoril.tvChecked = '23/08/2026';
         estoril.tvSource = 'SL Benfica';
       }
 
       tvChannel = function (m) {
-        const pt = m.tvPT || m.tv || 'Por confirmar';
-        const uk = m.tvUK || 'Por confirmar';
-        return 'PT: ' + pt + ' · UK: ' + uk;
+        return m.tvPT || m.tv || 'Por confirmar';
       };
 
       renderHero();
