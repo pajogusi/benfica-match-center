@@ -195,6 +195,32 @@ function renderFinalResultBanner() {
     </div>`;
 }
 
+const EUROPA_DRAW = {
+  text: 'SORTEIO DA LIGA EUROPA · Sexta-feira, 28 de agosto · 12:00 · Em direto e gratuito em UEFA.com e UEFA.tv',
+  url: 'https://www.uefa.com/uefaeuropaleague/draws/'
+};
+
+function renderEuropaDrawBanner() {
+  const hero = document.getElementById('nextMatchHero');
+  if (!hero) return;
+
+  let banner = document.getElementById('europaDrawBanner');
+  if (!banner) {
+    banner = document.createElement('section');
+    banner.id = 'europaDrawBanner';
+    banner.className = 'result-ticker draw-ticker';
+    banner.setAttribute('aria-label', 'Informação do sorteio da Liga Europa');
+    hero.insertAdjacentElement('afterend', banner);
+  }
+
+  const item = `<a class="result-ticker-item result-ticker-link" href="${EUROPA_DRAW.url}" target="_blank" rel="noreferrer">${escapeHtml(EUROPA_DRAW.text)} <b>↗</b></a>`;
+  banner.innerHTML = `
+    <div class="result-ticker-track">
+      ${item}
+      <a class="result-ticker-item result-ticker-link" href="${EUROPA_DRAW.url}" target="_blank" rel="noreferrer" aria-hidden="true" tabindex="-1">${escapeHtml(EUROPA_DRAW.text)} <b>↗</b></a>
+    </div>`;
+}
+
 function competitionMark(c, className='competition-logo') {
   const src = competitionLogos[c.id];
   return src
@@ -969,6 +995,7 @@ applyOnlineCache();
 
 renderFinalResultBanner();
 renderHero();
+renderEuropaDrawBanner();
 renderCompetitionCards();
 routeFromHash();
 refreshOnlineData();
