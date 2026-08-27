@@ -220,7 +220,7 @@ const matches = [
   {id:'uel-0608',competition:'europa',round:'3.ª pré-eliminatória · 1.ª mão',date:'2026-08-06',time:'20:00',home:BENFICA,away:'Heart of Midlothian',hs:6,as:1,status:'FT',venue:'Estádio da Luz'},
   {id:'uel-1308',competition:'europa',round:'3.ª pré-eliminatória · 2.ª mão',date:'2026-08-13',time:'19:45',home:'Heart of Midlothian',away:BENFICA,hs:1,as:1,status:'FT',venue:'Tynecastle Park'},
   {id:'uel-2008',competition:'europa',round:'Play-off · 1.ª mão',date:'2026-08-20',time:'20:00',home:BENFICA,away:'AGF Aarhus',hs:3,as:1,status:'FT',venue:'Estádio da Luz'},
-  {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'19:00',kickoffUtc:'2026-08-27T18:00:00Z',kickoffLocked:true,home:'AGF Aarhus',away:BENFICA,status:'NS',venue:'Randers Stadion',tv:'Por confirmar'},
+  {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'19:00',kickoffUtc:'2026-08-27T18:00:00Z',kickoffLocked:true,home:'AGF Aarhus',away:BENFICA,hs:0,as:1,status:'LIVE',livePhase:'2.ª parte',venue:'Randers Stadion',tv:'SPORT TV 5'},
   {id:'allianz-qf',competition:'taca-liga',round:'Quartos de final',date:'2026-10-27',time:null,home:BENFICA,away:'Gil Vicente',status:'NS',venue:'Estádio da Luz'},
   {id:'tp-r4',competition:'taca-portugal',round:'4.ª eliminatória',date:null,time:null,home:BENFICA,away:'Adversário por sortear',status:'NS',venue:null,note:'Janela prevista: 21/22 novembro 2026'}
 ];
@@ -279,7 +279,7 @@ function dateText(m, long=false) {
   return kickoff ? `${base} · ${kickoff}` : `${base} · hora por confirmar`;
 }
 
-function scoreText(m) { return m.status === 'FT' ? `${m.hs} – ${m.as}` : 'vs'; }
+function scoreText(m) { return ['FT','LIVE'].includes(m.status) ? `${m.hs} – ${m.as}` : 'vs'; }
 
 function benficaResult(m) {
   if (m.status !== 'FT') return null;
@@ -314,7 +314,7 @@ function aggregateText(m) {
     .trim();
 
   const relevant = matches.filter(x => {
-    if (x.competition !== m.competition || x.status !== 'FT') return false;
+    if (x.competition !== m.competition || !['FT','LIVE'].includes(x.status)) return false;
     const xStage = String(x.round || '')
       .replace(/\s*·\s*[12]\.ª\s*mão/gi, '')
       .trim();
@@ -346,6 +346,7 @@ function countdown(m) {
   if (!m.time && !m.kickoffUtc) return 'Hora por confirmar';
 
   const diffMs = dt.getTime() - Date.now();
+  if (m.status === 'LIVE') return m.livePhase || 'Jogo em curso';
   if (diffMs <= 0) return 'Jogo em curso';
 
   const totalSeconds = Math.floor(diffMs / 1000);
@@ -413,7 +414,10 @@ function renderHero() {
 
   const kickoff = kickoffTimeText(m) || 'Hora por confirmar';
   const venue = m.venue || 'Local por confirmar';
-  const note = m.note ? `<span class="next-match-note">${escapeHtml(m.note)}</span>` : '';
+  const note = m.status === 'LIVE'
+    ? `<span class="next-match-note">${escapeHtml(m.livePhase || 'Em direto')}</span>`
+    : (m.note ? `<span class="next-match-note">${escapeHtml(m.note)}</span>` : '');
+  const centreScore = m.status === 'LIVE' ? `${m.hs} – ${m.as}` : 'VS';
 
   root.innerHTML = `
     <div class="hero-topline next-topline">
@@ -443,7 +447,7 @@ function renderHero() {
         <time class="next-match-date" datetime="${escapeHtml(m.date || '')}">${escapeHtml(dateOnly)}</time>
         <div class="next-kickoff">${escapeHtml(kickoff)}</div>
         ${note}
-        <div class="next-vs">VS</div>
+        <div class="next-vs">${escapeHtml(centreScore)}</div>
         <span class="next-round">${escapeHtml(m.round)}</span>
       </section>
 
@@ -698,9 +702,8 @@ function sportsDbEventToMatch(event) {
   const competition = sportsDbCompetition(event);
   if (!competition) return null;
 
-  const finished = event.strStatus === 'FT'
-    || (event.intHomeScore !== null && event.intHomeScore !== ''
-      && event.intAwayScore !== null && event.intAwayScore !== '');
+  const onlineStatus = onlineNormalize(event.strStatus || '');
+  const finished = ['ft', 'match finished', 'finished', 'aet', 'pen'].includes(onlineStatus);
 
   const rawTime = event.strTimeLocal || event.strTime || '';
   const time = /^\d{2}:\d{2}/.test(rawTime) ? rawTime.slice(0,5) : null;
