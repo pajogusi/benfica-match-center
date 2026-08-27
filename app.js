@@ -1,5 +1,5 @@
 const BENFICA = 'SL Benfica';
-const DATA_DATE = '22/08/2026';
+const DATA_DATE = '27/08/2026';
 const DISPLAY_TIME_ZONE = 'Europe/London';
 
 const CLUB_CRESTS = {
@@ -84,17 +84,17 @@ const competitionData = [
     name: 'Liga Europa',
     subtitle: 'UEFA Europa League 2026/27',
     icon: '🇪🇺',
-    status: 'Em curso',
-    tone: 'active',
-    shortDetail: 'Play-off · vantagem 3–1 sobre o Aarhus',
-    statusTitle: 'Play-off de acesso à fase de liga',
-    statusText: 'O Benfica venceu a 1.ª mão por 3–1. A decisão é a 27 de agosto, na Dinamarca. Se vencer a eliminatória, entra na fase de liga da Liga Europa.',
+    status: 'Qualificado',
+    tone: 'qualified',
+    shortDetail: 'Fase de liga · apurado com 6–2 no agregado',
+    statusTitle: 'Qualificado para a fase de liga',
+    statusText: 'O Benfica venceu o Aarhus por 3–1 na Dinamarca e fechou a eliminatória com 6–2 no agregado, garantindo a presença na fase de liga da Liga Europa.',
     tableType: 'knockout',
     stages: [
       { label: '2.ª pré-eliminatória', value: 'Apurado · 6–2 agg. vs St. Gallen' },
       { label: '3.ª pré-eliminatória', value: 'Apurado · 7–2 agg. vs Hearts' },
-      { label: 'Play-off', value: '3–1 após a 1.ª mão vs Aarhus' },
-      { label: 'Fase de liga', value: 'Por apurar' }
+      { label: 'Play-off', value: 'Apurado · 6–2 agg. vs Aarhus' },
+      { label: 'Fase de liga', value: 'Qualificado' }
     ],
     sourceLabel: 'UEFA',
     sourceUrl: 'https://www.uefa.com/uefaeuropaleague/clubs/50147/matches/'
@@ -168,6 +168,33 @@ const competitionLogos = {
   'uefa-supercup': 'icons/competitions/uefa-supercup.svg'
 };
 
+const FINAL_RESULT_BANNER = {
+  result: 'AGF Aarhus 1–3 SL Benfica',
+  aggregate: 'Benfica 6–2 no agregado',
+  scorers: "Prestianni 19' e 61' · Rafa 56' · AGF: Carstensen 60'"
+};
+
+function renderFinalResultBanner() {
+  const topbar = document.querySelector('.topbar');
+  if (!topbar) return;
+
+  let banner = document.getElementById('finalResultBanner');
+  if (!banner) {
+    banner = document.createElement('section');
+    banner.id = 'finalResultBanner';
+    banner.className = 'result-ticker';
+    banner.setAttribute('aria-label', 'Resultado final do último jogo');
+    topbar.insertAdjacentElement('afterend', banner);
+  }
+
+  const text = `FINAL · ${FINAL_RESULT_BANNER.result} · ${FINAL_RESULT_BANNER.aggregate} · Marcadores: ${FINAL_RESULT_BANNER.scorers}`;
+  banner.innerHTML = `
+    <div class="result-ticker-track">
+      <span class="result-ticker-item">${escapeHtml(text)}</span>
+      <span class="result-ticker-item" aria-hidden="true">${escapeHtml(text)}</span>
+    </div>`;
+}
+
 function competitionMark(c, className='competition-logo') {
   const src = competitionLogos[c.id];
   return src
@@ -211,7 +238,7 @@ const leagueCalendar = [
 Object.assign(leagueCalendar[0], {date:'2026-08-09', time:'20:30', hs:2, as:2, status:'FT', venue:'Estádio da Luz'});
 Object.assign(leagueCalendar[1], {date:'2026-08-17', time:'20:15', hs:0, as:7, status:'FT', venue:'Estádio Municipal de Rio Maior'});
 Object.assign(leagueCalendar[2], {date:'2026-09-09', time:'20:15', venue:'Parque Joaquim de Almeida Freitas'});
-Object.assign(leagueCalendar[3], {date:'2026-08-31', time:null, venue:'Estádio da Luz', tv:'BTV'});
+Object.assign(leagueCalendar[3], {date:'2026-08-31', time:'20:15', kickoffUtc:'2026-08-31T19:15:00Z', kickoffLocked:true, venue:'Estádio da Luz', tv:'BTV'});
 
 const matches = [
   ...leagueCalendar,
@@ -220,7 +247,7 @@ const matches = [
   {id:'uel-0608',competition:'europa',round:'3.ª pré-eliminatória · 1.ª mão',date:'2026-08-06',time:'20:00',home:BENFICA,away:'Heart of Midlothian',hs:6,as:1,status:'FT',venue:'Estádio da Luz'},
   {id:'uel-1308',competition:'europa',round:'3.ª pré-eliminatória · 2.ª mão',date:'2026-08-13',time:'19:45',home:'Heart of Midlothian',away:BENFICA,hs:1,as:1,status:'FT',venue:'Tynecastle Park'},
   {id:'uel-2008',competition:'europa',round:'Play-off · 1.ª mão',date:'2026-08-20',time:'20:00',home:BENFICA,away:'AGF Aarhus',hs:3,as:1,status:'FT',venue:'Estádio da Luz'},
-  {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'19:00',kickoffUtc:'2026-08-27T18:00:00Z',kickoffLocked:true,home:'AGF Aarhus',away:BENFICA,hs:1,as:3,status:'LIVE',livePhase:'2.ª parte',venue:'Randers Stadion',tv:'SPORT TV 5'},
+  {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'19:00',kickoffUtc:'2026-08-27T18:00:00Z',kickoffLocked:true,home:'AGF Aarhus',away:BENFICA,hs:1,as:3,status:'FT',venue:'Cepheus Park Randers',tv:'SPORT TV 5',goals:[{team:BENFICA,player:'Prestianni',minute:"19'"},{team:BENFICA,player:'Rafa',minute:"56'"},{team:'AGF Aarhus',player:'Carstensen',minute:"60'"},{team:BENFICA,player:'Prestianni',minute:"61'"}]},
   {id:'allianz-qf',competition:'taca-liga',round:'Quartos de final',date:'2026-10-27',time:null,home:BENFICA,away:'Gil Vicente',status:'NS',venue:'Estádio da Luz'},
   {id:'tp-r4',competition:'taca-portugal',round:'4.ª eliminatória',date:null,time:null,home:BENFICA,away:'Adversário por sortear',status:'NS',venue:null,note:'Janela prevista: 21/22 novembro 2026'}
 ];
@@ -940,6 +967,7 @@ document.querySelectorAll('.detail-tab').forEach(btn => btn.addEventListener('cl
 window.addEventListener('popstate', routeFromHash);
 applyOnlineCache();
 
+renderFinalResultBanner();
 renderHero();
 renderCompetitionCards();
 routeFromHash();
