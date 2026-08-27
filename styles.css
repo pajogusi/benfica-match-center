@@ -570,3 +570,22 @@ footer strong { color: #ddd; margin-right: 7px; }
   color: #fff;
   text-decoration: underline;
 }
+
+
+/* Keep the score and draw tickers moving in Opera, even when the
+   browser inherits the operating system's reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  .result-ticker-track {
+    animation: final-result-scroll 24s linear infinite;
+    width: max-content;
+    padding: 11px 0;
+  }
+
+  .result-ticker-item {
+    white-space: nowrap;
+  }
+
+  .result-ticker-item[aria-hidden="true"] {
+    display: block;
+  }
+}
