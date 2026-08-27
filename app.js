@@ -220,7 +220,7 @@ const matches = [
   {id:'uel-0608',competition:'europa',round:'3.ª pré-eliminatória · 1.ª mão',date:'2026-08-06',time:'20:00',home:BENFICA,away:'Heart of Midlothian',hs:6,as:1,status:'FT',venue:'Estádio da Luz'},
   {id:'uel-1308',competition:'europa',round:'3.ª pré-eliminatória · 2.ª mão',date:'2026-08-13',time:'19:45',home:'Heart of Midlothian',away:BENFICA,hs:1,as:1,status:'FT',venue:'Tynecastle Park'},
   {id:'uel-2008',competition:'europa',round:'Play-off · 1.ª mão',date:'2026-08-20',time:'20:00',home:BENFICA,away:'AGF Aarhus',hs:3,as:1,status:'FT',venue:'Estádio da Luz'},
-  {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'19:00',kickoffUtc:'2026-08-27T18:00:00Z',kickoffLocked:true,home:'AGF Aarhus',away:BENFICA,hs:0,as:2,status:'LIVE',livePhase:'2.ª parte',venue:'Randers Stadion',tv:'SPORT TV 5'},
+  {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'19:00',kickoffUtc:'2026-08-27T18:00:00Z',kickoffLocked:true,home:'AGF Aarhus',away:BENFICA,hs:1,as:3,status:'LIVE',livePhase:'2.ª parte',venue:'Randers Stadion',tv:'SPORT TV 5'},
   {id:'allianz-qf',competition:'taca-liga',round:'Quartos de final',date:'2026-10-27',time:null,home:BENFICA,away:'Gil Vicente',status:'NS',venue:'Estádio da Luz'},
   {id:'tp-r4',competition:'taca-portugal',round:'4.ª eliminatória',date:null,time:null,home:BENFICA,away:'Adversário por sortear',status:'NS',venue:null,note:'Janela prevista: 21/22 novembro 2026'}
 ];
