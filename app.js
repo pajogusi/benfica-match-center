@@ -1,5 +1,6 @@
 const BENFICA = 'SL Benfica';
 const DATA_DATE = '22/08/2026';
+const DISPLAY_TIME_ZONE = 'Europe/London';
 
 const CLUB_CRESTS = {
   "SL Benfica": "icons/benfica-crest.svg",
@@ -219,7 +220,7 @@ const matches = [
   {id:'uel-0608',competition:'europa',round:'3.ª pré-eliminatória · 1.ª mão',date:'2026-08-06',time:'20:00',home:BENFICA,away:'Heart of Midlothian',hs:6,as:1,status:'FT',venue:'Estádio da Luz'},
   {id:'uel-1308',competition:'europa',round:'3.ª pré-eliminatória · 2.ª mão',date:'2026-08-13',time:'19:45',home:'Heart of Midlothian',away:BENFICA,hs:1,as:1,status:'FT',venue:'Tynecastle Park'},
   {id:'uel-2008',competition:'europa',round:'Play-off · 1.ª mão',date:'2026-08-20',time:'20:00',home:BENFICA,away:'AGF Aarhus',hs:3,as:1,status:'FT',venue:'Estádio da Luz'},
-  {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'19:00',kickoffUtc:'2026-08-27T18:00:00Z',home:'AGF Aarhus',away:BENFICA,status:'NS',venue:'Randers Stadion',note:'19:00 hora UK',tv:'Por confirmar'},
+  {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'20:00',kickoffUtc:'2026-08-27T19:00:00Z',kickoffLocked:true,home:'AGF Aarhus',away:BENFICA,status:'NS',venue:'Randers Stadion',note:'20:00 hora UK e Portugal',tv:'Por confirmar'},
   {id:'allianz-qf',competition:'taca-liga',round:'Quartos de final',date:'2026-10-27',time:null,home:BENFICA,away:'Gil Vicente',status:'NS',venue:'Estádio da Luz'},
   {id:'tp-r4',competition:'taca-portugal',round:'4.ª eliminatória',date:null,time:null,home:BENFICA,away:'Adversário por sortear',status:'NS',venue:null,note:'Janela prevista: 21/22 novembro 2026'}
 ];
@@ -251,12 +252,31 @@ function parseDate(m) {
   return new Date(`${m.date}T${m.time || '12:00'}:00`);
 }
 
+function kickoffTimeText(m) {
+  if (!m) return null;
+  if (m.kickoffUtc) {
+    const d = parseDate(m);
+    if (d) {
+      return new Intl.DateTimeFormat('pt-PT', {
+        timeZone: DISPLAY_TIME_ZONE,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).format(d);
+    }
+  }
+  return m.time || null;
+}
+
 function dateText(m, long=false) {
   if (!m.date) return m.note || 'Data por confirmar';
   const d = parseDate(m);
-  const opts = long ? {weekday:'long',day:'numeric',month:'long',year:'numeric'} : {day:'2-digit',month:'short',year:'numeric'};
+  const opts = long
+    ? {timeZone:DISPLAY_TIME_ZONE,weekday:'long',day:'numeric',month:'long',year:'numeric'}
+    : {timeZone:DISPLAY_TIME_ZONE,day:'2-digit',month:'short',year:'numeric'};
   const base = new Intl.DateTimeFormat('pt-PT', opts).format(d);
-  return m.time ? `${base} · ${m.time}` : `${base} · hora por confirmar`;
+  const kickoff = kickoffTimeText(m);
+  return kickoff ? `${base} · ${kickoff}` : `${base} · hora por confirmar`;
 }
 
 function scoreText(m) { return m.status === 'FT' ? `${m.hs} – ${m.as}` : 'vs'; }
@@ -386,11 +406,12 @@ function renderHero() {
   const dt = parseDate(m);
   const dateOnly = dt
     ? new Intl.DateTimeFormat('pt-PT', {
-        weekday: 'short', day: '2-digit', month: 'long', year: 'numeric'
+        weekday: 'short', day: '2-digit', month: 'long', year: 'numeric',
+        timeZone: DISPLAY_TIME_ZONE
       }).format(dt)
     : 'Data por confirmar';
 
-  const kickoff = m.time || 'Hora por confirmar';
+  const kickoff = kickoffTimeText(m) || 'Hora por confirmar';
   const venue = m.venue || 'Local por confirmar';
   const note = m.note ? `<span class="next-match-note">${escapeHtml(m.note)}</span>` : '';
 
@@ -728,9 +749,9 @@ function mergeOnlineMatches(incoming=[]) {
     if (current) {
       const before = JSON.stringify(current);
 
-      if (fresh.date) current.date = fresh.date;
-      if (fresh.time) current.time = fresh.time;
-      if (fresh.kickoffUtc) current.kickoffUtc = fresh.kickoffUtc;
+      if (fresh.date && !current.kickoffLocked) current.date = fresh.date;
+      if (fresh.time && !current.kickoffLocked) current.time = fresh.time;
+      if (fresh.kickoffUtc && !current.kickoffLocked) current.kickoffUtc = fresh.kickoffUtc;
       if (fresh.venue) current.venue = fresh.venue;
 
       if (fresh.status === 'FT') {
@@ -875,8 +896,10 @@ async function refreshOnlineData() {
     }
 
     const stamp = new Intl.DateTimeFormat('pt-PT', {
+      timeZone: DISPLAY_TIME_ZONE,
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: false
     }).format(new Date());
 
     if (onlineMatches.length || changedTable) {
