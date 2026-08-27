@@ -543,3 +543,30 @@ footer strong { color: #ddd; margin-right: 7px; }
     display: none;
   }
 }
+
+
+/* EUROPA LEAGUE DRAW TICKER V1 */
+.draw-ticker {
+  margin-top: -10px;
+  border-color: rgba(245, 158, 11, .3);
+  background: linear-gradient(90deg, rgba(95, 42, 5, .98), rgba(43, 18, 5, .98));
+}
+
+.draw-ticker::before {
+  background: linear-gradient(90deg, rgba(95, 42, 5, 1), transparent);
+}
+
+.draw-ticker::after {
+  background: linear-gradient(270deg, rgba(43, 18, 5, 1), transparent);
+}
+
+.result-ticker-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.result-ticker-link:hover,
+.result-ticker-link:focus-visible {
+  color: #fff;
+  text-decoration: underline;
+}
