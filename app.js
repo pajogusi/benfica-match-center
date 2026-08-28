@@ -616,7 +616,37 @@ function renderEuropaFixturesTable() {
           </tr>`;
         }).join('')}</tbody>
       </table>
-    </div>`;
+    </div>
+
+    <section class="europa-format-note" aria-labelledby="europaFormatTitle">
+      <div class="europa-format-heading">
+        <span>Como funciona</span>
+        <h3 id="europaFormatTitle">O caminho até à final</h3>
+      </div>
+      <ol class="europa-format-steps">
+        <li>
+          <span class="format-step-number">1</span>
+          <div><strong>Fase de liga</strong><p>As 36 equipas formam uma classificação única. Cada clube disputa oito jogos: quatro em casa e quatro fora.</p></div>
+        </li>
+        <li>
+          <span class="format-step-number">2</span>
+          <div><strong>Apuramento</strong><p>Do 1.º ao 8.º lugar seguem diretamente para os oitavos. Do 9.º ao 24.º disputam um play-off. Do 25.º ao 36.º ficam eliminados.</p></div>
+        </li>
+        <li>
+          <span class="format-step-number">3</span>
+          <div><strong>Play-off — 18 e 25 de fevereiro de 2027</strong><p>É disputado a duas mãos. Os oito vencedores juntam-se aos oito primeiros da fase de liga nos oitavos de final.</p></div>
+        </li>
+        <li>
+          <span class="format-step-number">4</span>
+          <div><strong>Eliminatórias a duas mãos</strong><p>Oitavos: 11 e 18 de março · Quartos: 8 e 15 de abril · Meias-finais: 29 de abril e 6 de maio.</p></div>
+        </li>
+        <li>
+          <span class="format-step-number">5</span>
+          <div><strong>Final — 26 de maio de 2027</strong><p>Jogo único no Stadion Frankfurt, na Alemanha. O vencedor conquista a Liga Europa e garante acesso à Liga dos Campeões 2027/28, se ainda não estiver qualificado pelo campeonato.</p></div>
+        </li>
+      </ol>
+      <a class="europa-format-source" href="https://www.uefa.com/uefaeuropaleague/news/02a6-20d57d095740-e1e0b3de85df-1000--2026-27-europa-league-teams-dates-draws-format-final/" target="_blank" rel="noreferrer">Fonte: UEFA ↗</a>
+    </section>`;
 }
 
 function renderCalendar(c) {
