@@ -719,3 +719,15 @@ footer strong { color: #ddd; margin-right: 7px; }
     padding: 11px;
   }
 }
+
+
+/* PORTUGAL TIME LABEL V1 */
+.next-kickoff-zone {
+  display: block;
+  margin-top: -4px;
+  color: #fca5a5;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
