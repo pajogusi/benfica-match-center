@@ -84,17 +84,18 @@ const competitionData = [
     name: 'Liga Europa',
     subtitle: 'UEFA Europa League 2026/27',
     icon: '🇪🇺',
-    status: 'Qualificado',
-    tone: 'qualified',
-    shortDetail: 'Fase de liga · apurado com 6–2 no agregado',
-    statusTitle: 'Qualificado para a fase de liga',
-    statusText: 'O Benfica venceu o Aarhus por 3–1 na Dinamarca e fechou a eliminatória com 6–2 no agregado, garantindo a presença na fase de liga da Liga Europa.',
+    status: 'Em curso',
+    tone: 'active',
+    shortDetail: 'Fase de liga · 8 adversários definidos',
+    statusTitle: 'Sorteio da fase de liga concluído',
+    statusText: 'O Benfica defronta AZ Alkmaar, Celtic, Lech Poznań e OFI Crete no Estádio da Luz; joga fora com AC Milan, Viktoria Plzeň, Omonia e NEC.',
     tableType: 'knockout',
     stages: [
       { label: '2.ª pré-eliminatória', value: 'Apurado · 6–2 agg. vs St. Gallen' },
       { label: '3.ª pré-eliminatória', value: 'Apurado · 7–2 agg. vs Hearts' },
       { label: 'Play-off', value: 'Apurado · 6–2 agg. vs Aarhus' },
-      { label: 'Fase de liga', value: 'Qualificado' }
+      { label: 'Fase de liga · em casa', value: 'AZ Alkmaar · Celtic · Lech Poznań · OFI Crete' },
+      { label: 'Fase de liga · fora', value: 'AC Milan · Viktoria Plzeň · Omonia · NEC' }
     ],
     sourceLabel: 'UEFA',
     sourceUrl: 'https://www.uefa.com/uefaeuropaleague/clubs/50147/matches/'
@@ -196,8 +197,8 @@ function renderFinalResultBanner() {
 }
 
 const EUROPA_DRAW = {
-  text: 'SORTEIO DA LIGA EUROPA · Sexta-feira, 28 de agosto · 12:00 · Em direto e gratuito em UEFA.com e UEFA.tv',
-  url: 'https://www.uefa.com/uefaeuropaleague/draws/'
+  text: 'FASE DE LIGA DA LIGA EUROPA · BENFICA · Na Luz: AZ Alkmaar, Celtic, Lech Poznań e OFI Crete · Fora: AC Milan, Viktoria Plzeň, Omonia e NEC',
+  url: 'https://www.slbenfica.pt/pt-pt/agora/noticias/2026/08/28/futebol-benfica-sorteio-fase-de-liga-da-liga-europa-2026-27'
 };
 
 function renderEuropaDrawBanner() {
@@ -209,7 +210,7 @@ function renderEuropaDrawBanner() {
     banner = document.createElement('section');
     banner.id = 'europaDrawBanner';
     banner.className = 'result-ticker draw-ticker';
-    banner.setAttribute('aria-label', 'Informação do sorteio da Liga Europa');
+    banner.setAttribute('aria-label', 'Adversários do Benfica na fase de liga da Liga Europa');
     hero.insertAdjacentElement('afterend', banner);
   }
 
@@ -274,6 +275,14 @@ const matches = [
   {id:'uel-1308',competition:'europa',round:'3.ª pré-eliminatória · 2.ª mão',date:'2026-08-13',time:'19:45',home:'Heart of Midlothian',away:BENFICA,hs:1,as:1,status:'FT',venue:'Tynecastle Park'},
   {id:'uel-2008',competition:'europa',round:'Play-off · 1.ª mão',date:'2026-08-20',time:'20:00',home:BENFICA,away:'AGF Aarhus',hs:3,as:1,status:'FT',venue:'Estádio da Luz'},
   {id:'uel-2708',competition:'europa',round:'Play-off · 2.ª mão',date:'2026-08-27',time:'19:00',kickoffUtc:'2026-08-27T18:00:00Z',kickoffLocked:true,home:'AGF Aarhus',away:BENFICA,hs:1,as:3,status:'FT',venue:'Cepheus Park Randers',tv:'SPORT TV 5',goals:[{team:BENFICA,player:'Prestianni',minute:"19'"},{team:BENFICA,player:'Rafa',minute:"56'"},{team:'AGF Aarhus',player:'Carstensen',minute:"60'"},{team:BENFICA,player:'Prestianni',minute:"61'"}]},
+  {id:'uel-lp-az',competition:'europa',round:'Fase de liga · adversário sorteado',order:1,date:null,time:null,home:BENFICA,away:'AZ Alkmaar',status:'NS',venue:'Estádio da Luz'},
+  {id:'uel-lp-milan',competition:'europa',round:'Fase de liga · adversário sorteado',order:2,date:null,time:null,home:'AC Milan',away:BENFICA,status:'NS',venue:'Fora'},
+  {id:'uel-lp-celtic',competition:'europa',round:'Fase de liga · adversário sorteado',order:3,date:null,time:null,home:BENFICA,away:'Celtic',status:'NS',venue:'Estádio da Luz'},
+  {id:'uel-lp-plzen',competition:'europa',round:'Fase de liga · adversário sorteado',order:4,date:null,time:null,home:'Viktoria Plzeň',away:BENFICA,status:'NS',venue:'Fora'},
+  {id:'uel-lp-lech',competition:'europa',round:'Fase de liga · adversário sorteado',order:5,date:null,time:null,home:BENFICA,away:'Lech Poznań',status:'NS',venue:'Estádio da Luz'},
+  {id:'uel-lp-omonia',competition:'europa',round:'Fase de liga · adversário sorteado',order:6,date:null,time:null,home:'Omonia',away:BENFICA,status:'NS',venue:'Fora'},
+  {id:'uel-lp-ofi',competition:'europa',round:'Fase de liga · adversário sorteado',order:7,date:null,time:null,home:BENFICA,away:'OFI Crete',status:'NS',venue:'Estádio da Luz'},
+  {id:'uel-lp-nec',competition:'europa',round:'Fase de liga · adversário sorteado',order:8,date:null,time:null,home:'NEC',away:BENFICA,status:'NS',venue:'Fora'},
   {id:'allianz-qf',competition:'taca-liga',round:'Quartos de final',date:'2026-10-27',time:null,home:BENFICA,away:'Gil Vicente',status:'NS',venue:'Estádio da Luz'},
   {id:'tp-r4',competition:'taca-portugal',round:'4.ª eliminatória',date:null,time:null,home:BENFICA,away:'Adversário por sortear',status:'NS',venue:null,note:'Janela prevista: 21/22 novembro 2026'}
 ];
@@ -598,7 +607,7 @@ function renderStatus(c) {
   if (c.tableType === 'league') return intro + renderLeagueTable();
   if (c.tableType === 'knockout') {
     return intro + `
-      <div class="section-head"><div><h2>Percurso / classificação na prova</h2><p>Nesta fase a prova é a eliminar, por isso não existe tabela por pontos.</p></div></div>
+      <div class="section-head"><div><h2>Percurso / fase atual</h2><p>${c.id === 'europa' ? 'Na fase de liga, o Benfica disputa oito jogos: quatro em casa e quatro fora.' : 'Nesta fase a prova é a eliminar, por isso não existe tabela por pontos.'}</p></div></div>
       <div class="stage-list">
         ${(c.stages || []).map((s,i)=>`<div class="stage-row"><span class="stage-index">${i+1}</span><div><strong>${escapeHtml(s.label)}</strong><span>${escapeHtml(s.value)}</span></div></div>`).join('')}
       </div>`;
@@ -789,6 +798,7 @@ function sameFixture(a, b) {
   const sameTeams = a.home === b.home && a.away === b.away;
   if (!sameTeams) return false;
   if (a.date && b.date && a.date === b.date) return true;
+  if (!a.date || !b.date) return true;
 
   const ad = parseDate(a);
   const bd = parseDate(b);
