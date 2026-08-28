@@ -589,3 +589,38 @@ footer strong { color: #ddd; margin-right: 7px; }
     display: block;
   }
 }
+
+
+/* EUROPA LEAGUE OPPONENTS TABLE V1 */
+.europa-fixtures-table .standings-table {
+  min-width: 560px;
+}
+
+.europa-fixtures-table .fixture-date {
+  font-weight: 750;
+  color: #f4f4f6;
+  white-space: nowrap;
+}
+
+.fixture-location {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 54px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.fixture-location.home {
+  color: #86efac;
+  background: rgba(34, 197, 94, .12);
+  border: 1px solid rgba(34, 197, 94, .25);
+}
+
+.fixture-location.away {
+  color: #fdba74;
+  background: rgba(249, 115, 22, .12);
+  border: 1px solid rgba(249, 115, 22, .25);
+}
