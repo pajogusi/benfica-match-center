@@ -169,59 +169,6 @@ const competitionLogos = {
   'uefa-supercup': 'icons/competitions/uefa-supercup.svg'
 };
 
-const FINAL_RESULT_BANNER = {
-  result: 'AGF Aarhus 1–3 SL Benfica',
-  aggregate: 'Benfica 6–2 no agregado',
-  scorers: "Prestianni 19' e 61' · Rafa 56' · AGF: Carstensen 60'"
-};
-
-function renderFinalResultBanner() {
-  const topbar = document.querySelector('.topbar');
-  if (!topbar) return;
-
-  let banner = document.getElementById('finalResultBanner');
-  if (!banner) {
-    banner = document.createElement('section');
-    banner.id = 'finalResultBanner';
-    banner.className = 'result-ticker';
-    banner.setAttribute('aria-label', 'Resultado final do último jogo');
-    topbar.insertAdjacentElement('afterend', banner);
-  }
-
-  const text = `FINAL · ${FINAL_RESULT_BANNER.result} · ${FINAL_RESULT_BANNER.aggregate} · Marcadores: ${FINAL_RESULT_BANNER.scorers}`;
-  banner.innerHTML = `
-    <div class="result-ticker-track">
-      <span class="result-ticker-item">${escapeHtml(text)}</span>
-      <span class="result-ticker-item" aria-hidden="true">${escapeHtml(text)}</span>
-    </div>`;
-}
-
-const EUROPA_DRAW = {
-  text: 'FASE DE LIGA DA LIGA EUROPA · BENFICA · Na Luz: AZ Alkmaar, Celtic, Lech Poznań e OFI Crete · Fora: AC Milan, Viktoria Plzeň, Omonia e NEC',
-  url: 'https://www.slbenfica.pt/pt-pt/agora/noticias/2026/08/28/futebol-benfica-sorteio-fase-de-liga-da-liga-europa-2026-27'
-};
-
-function renderEuropaDrawBanner() {
-  const hero = document.getElementById('nextMatchHero');
-  if (!hero) return;
-
-  let banner = document.getElementById('europaDrawBanner');
-  if (!banner) {
-    banner = document.createElement('section');
-    banner.id = 'europaDrawBanner';
-    banner.className = 'result-ticker draw-ticker';
-    banner.setAttribute('aria-label', 'Adversários do Benfica na fase de liga da Liga Europa');
-    hero.insertAdjacentElement('afterend', banner);
-  }
-
-  const item = `<a class="result-ticker-item result-ticker-link" href="${EUROPA_DRAW.url}" target="_blank" rel="noreferrer">${escapeHtml(EUROPA_DRAW.text)} <b>↗</b></a>`;
-  banner.innerHTML = `
-    <div class="result-ticker-track">
-      ${item}
-      <a class="result-ticker-item result-ticker-link" href="${EUROPA_DRAW.url}" target="_blank" rel="noreferrer" aria-hidden="true" tabindex="-1">${escapeHtml(EUROPA_DRAW.text)} <b>↗</b></a>
-    </div>`;
-}
-
 function competitionMark(c, className='competition-logo') {
   const src = competitionLogos[c.id];
   return src
@@ -605,6 +552,7 @@ function renderStatus(c) {
     </article>`;
 
   if (c.tableType === 'league') return intro + renderLeagueTable();
+  if (c.id === 'europa') return intro + renderEuropaFixturesTable();
   if (c.tableType === 'knockout') {
     return intro + `
       <div class="section-head"><div><h2>Percurso / fase atual</h2><p>${c.id === 'europa' ? 'Na fase de liga, o Benfica disputa oito jogos: quatro em casa e quatro fora.' : 'Nesta fase a prova é a eliminar, por isso não existe tabela por pontos.'}</p></div></div>
@@ -629,6 +577,48 @@ function renderLeagueTable() {
     </div>`;
 }
 
+function europaFixtureDate(m) {
+  if (!m.date) return 'Por confirmar pela UEFA';
+  const d = parseDate(m);
+  if (!d) return 'Por confirmar pela UEFA';
+  return new Intl.DateTimeFormat('pt-PT', {
+    timeZone: DISPLAY_TIME_ZONE,
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  }).format(d);
+}
+
+function renderEuropaFixturesTable() {
+  const fixtures = matches
+    .filter(m => m.competition === 'europa' && m.status !== 'FT')
+    .sort((a,b) => {
+      if (a.date && b.date) return parseDate(a) - parseDate(b);
+      if (a.date) return -1;
+      if (b.date) return 1;
+      return (a.order || 999) - (b.order || 999);
+    });
+
+  return `
+    <div class="section-head"><div><h2>Adversários da fase de liga</h2><p>Datas individuais ainda por confirmar pela UEFA. As horas serão acrescentadas mais tarde.</p></div></div>
+    <div class="table-wrap europa-fixtures-table">
+      <table class="standings-table">
+        <thead><tr><th>#</th><th>Adversário</th><th>Local</th><th>Data</th></tr></thead>
+        <tbody>${fixtures.map((m,i) => {
+          const opponent = m.home === BENFICA ? m.away : m.home;
+          const location = m.home === BENFICA ? 'Casa' : 'Fora';
+          const locationClass = m.home === BENFICA ? 'home' : 'away';
+          return `<tr>
+            <td>${i+1}</td>
+            <td><span class="table-team">${clubCrestImg(opponent,'mini-team-crest')}<strong>${escapeHtml(opponent)}</strong></span></td>
+            <td><span class="fixture-location ${locationClass}">${location}</span></td>
+            <td class="fixture-date">${escapeHtml(europaFixtureDate(m))}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>`;
+}
+
 function renderCalendar(c) {
   const compMatches = matches.filter(m => m.competition === c.id);
   const results = compMatches.filter(m => m.status === 'FT').sort((a,b)=>(parseDate(b)||0)-(parseDate(a)||0));
@@ -641,6 +631,13 @@ function renderCalendar(c) {
 
   if (!compMatches.length) {
     return `<div class="empty-state large"><strong>O Benfica não tem jogos nesta competição em 2026/27.</strong><span>Estado: ${escapeHtml(c.status)}.</span></div>`;
+  }
+
+  if (c.id === 'europa') {
+    return `
+      ${results.length ? `<div class="section-head"><div><h2>Últimos resultados</h2><p>Jogos já realizados nesta competição.</p></div></div><div class="match-list">${results.map(matchCard).join('')}</div>` : ''}
+      ${renderEuropaFixturesTable()}
+    `;
   }
 
   return `
@@ -1003,9 +1000,7 @@ document.querySelectorAll('.detail-tab').forEach(btn => btn.addEventListener('cl
 window.addEventListener('popstate', routeFromHash);
 applyOnlineCache();
 
-renderFinalResultBanner();
 renderHero();
-renderEuropaDrawBanner();
 renderCompetitionCards();
 routeFromHash();
 refreshOnlineData();
