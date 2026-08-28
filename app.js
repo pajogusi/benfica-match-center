@@ -1,6 +1,7 @@
 const BENFICA = 'SL Benfica';
 const DATA_DATE = '27/08/2026';
-const DISPLAY_TIME_ZONE = 'Europe/London';
+const DISPLAY_TIME_ZONE = 'Europe/Lisbon';
+const DISPLAY_TIME_ZONE_LABEL = 'Hora de Portugal Continental';
 
 const CLUB_CRESTS = {
   "SL Benfica": "icons/benfica-crest.svg",
@@ -285,7 +286,7 @@ function dateText(m, long=false) {
     : {timeZone:DISPLAY_TIME_ZONE,day:'2-digit',month:'short',year:'numeric'};
   const base = new Intl.DateTimeFormat('pt-PT', opts).format(d);
   const kickoff = kickoffTimeText(m);
-  return kickoff ? `${base} · ${kickoff}` : `${base} · hora por confirmar`;
+  return kickoff ? `${base} · ${kickoff} · hora de Portugal` : `${base} · hora por confirmar`;
 }
 
 function scoreText(m) { return ['FT','LIVE'].includes(m.status) ? `${m.hs} – ${m.as}` : 'vs'; }
@@ -455,6 +456,7 @@ function renderHero() {
         </div>
         <time class="next-match-date" datetime="${escapeHtml(m.date || '')}">${escapeHtml(dateOnly)}</time>
         <div class="next-kickoff">${escapeHtml(kickoff)}</div>
+        <span class="next-kickoff-zone">${escapeHtml(DISPLAY_TIME_ZONE_LABEL)}</span>
         ${note}
         <div class="next-vs">${escapeHtml(centreScore)}</div>
         <span class="next-round">${escapeHtml(m.round)}</span>
