@@ -624,3 +624,98 @@ footer strong { color: #ddd; margin-right: 7px; }
   background: rgba(249, 115, 22, .12);
   border: 1px solid rgba(249, 115, 22, .25);
 }
+
+
+/* EUROPA LEAGUE FORMAT NOTE V1 */
+.europa-format-note {
+  margin-top: 22px;
+  padding: 22px;
+  border: 1px solid rgba(245, 158, 11, .24);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(80, 35, 7, .45), rgba(18, 18, 23, .96));
+}
+
+.europa-format-heading span {
+  display: block;
+  margin-bottom: 5px;
+  color: #fbbf24;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.europa-format-heading h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 20px;
+}
+
+.europa-format-steps {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.europa-format-steps li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 13px;
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 13px;
+  background: rgba(5, 5, 8, .38);
+}
+
+.format-step-number {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  color: #1b0d00;
+  background: #f59e0b;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.europa-format-steps strong {
+  display: block;
+  color: #fff;
+  font-size: 13px;
+}
+
+.europa-format-steps p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.europa-format-source {
+  color: #fbbf24;
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.europa-format-source:hover,
+.europa-format-source:focus-visible {
+  color: #fff;
+  text-decoration: underline;
+}
+
+@media (max-width: 560px) {
+  .europa-format-note {
+    padding: 16px;
+  }
+
+  .europa-format-steps li {
+    grid-template-columns: 30px 1fr;
+    gap: 10px;
+    padding: 11px;
+  }
+}
