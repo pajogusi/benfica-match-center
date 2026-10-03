@@ -567,7 +567,7 @@ function renderStatus(c) {
 
 function renderLeagueTable() {
   return `
-    <div class="section-head"><div><h2>Classificação da Liga</h2><p>${leagueTableUpdatedAt ? 'Tabela recebida do TheSportsDB · ' + escapeHtml(new Intl.DateTimeFormat('pt-PT', {timeZone:DISPLAY_TIME_ZONE, dateStyle:'short', timeStyle:'short'}).format(new Date(leagueTableUpdatedAt))) : 'Tabela de base de 18/08/2026 · não atualizada online.'}</p></div></div>
+    <div class="section-head"><div><h2>Classificação da Liga</h2><p>${leagueTableUpdatedAt ? 'Tabela recebida de ' + escapeHtml(leagueTableSource) + ' · ' + escapeHtml(new Intl.DateTimeFormat('pt-PT', {timeZone:DISPLAY_TIME_ZONE, dateStyle:'short', timeStyle:'short'}).format(new Date(leagueTableUpdatedAt))) : 'Tabela de base de 18/08/2026 · não atualizada online.'}</p></div></div>
     <div class="table-wrap">
       <table class="standings-table">
         <thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead>
@@ -710,12 +710,17 @@ const SPORTSDB_TEAM_ID = '134108';
 const SPORTSDB_LEAGUE_ID = '4344';
 const SPORTSDB_SEASON = '2026-2027';
 const SPORTSDB_BASE = 'https://www.thesportsdb.com/api/v1/json/123';
-const ONLINE_CACHE_KEY = `benfica-match-center-data-v2-${SPORTSDB_SEASON}`;
+const ONLINE_CACHE_KEY = `benfica-match-center-data-v3-${SPORTSDB_SEASON}`;
 const ONLINE_REFRESH_MS = 5 * 60 * 1000;
 const ONLINE_CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
 let onlineRefreshPromise = null;
 let lastOnlineAttempt = 0;
 let leagueTableUpdatedAt = null;
+let leagueTableSource = 'TheSportsDB';
+const ESPN_SEASON = 2026;
+const OFFICIAL_CALENDAR = 'https://raw.githubusercontent.com/pajogusi/benfica-match-center/main/data/official-calendar.json';
+const ESPN_SCHEDULE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/1929/schedule?season=' + ESPN_SEASON;
+const ESPN_STANDINGS = 'https://site.api.espn.com/apis/v2/sports/soccer/por.1/standings?season=' + ESPN_SEASON;
 let onlineSnapshot = {season: SPORTSDB_SEASON, events: [], tableRows: []};
 
 function onlineNormalize(value='') {
@@ -760,6 +765,12 @@ function canonicalTeamName(name='') {
     ['nacional', 'Nacional'],
     ['cd nacional', 'Nacional'],
     ['nacional da madeira', 'Nacional'],
+    ['c d nacional', 'Nacional'],
+    ['estrela', 'Estrela Amadora'],
+    ['omonia nicosia', 'Omonia'],
+    ['viktoria plzen', 'Viktoria Plzeň'],
+    ['lech poznan', 'Lech Poznań'],
+    ['nec nijmegen', 'NEC'],
     ['sc braga', 'SC Braga'],
     ['braga', 'SC Braga'],
     ['rio ave', 'Rio Ave'],
@@ -842,7 +853,11 @@ function sameFixture(a, b) {
   const sameTeams = a.home === b.home && a.away === b.away;
   if (!sameTeams) return false;
   if (a.id && b.id && a.id === b.id) return true;
-  if (a.competition === 'liga' && a.round === b.round) return true;
+  // Within one league season each home/away pairing occurs once.
+  if (a.competition === 'liga') return true;
+  if (['taca-liga','taca-portugal'].includes(a.competition) && a.round === b.round) return true;
+  if (!a.date && !b.date) return true;
+  if ((!a.date || !b.date) && /Fase de liga/.test(a.round || b.round || '')) return true;
   if (a.date && b.date && a.date === b.date) return true;
   if (!a.date || !b.date) return a.round === b.round;
 
@@ -873,7 +888,19 @@ function mergeOnlineMatches(incoming=[]) {
         delete current.kickoffUtc;
         current.kickoffLocked = false;
       }
+      if (fresh.source === 'ESPN' && !fresh.kickoffUtc) {
+        current.time = null;
+        delete current.kickoffUtc;
+        current.kickoffLocked = false;
+      }
       if (fresh.venue) current.venue = fresh.venue;
+      if (fresh.source) current.source = fresh.source;
+      if (fresh.sourceUrl) current.sourceUrl = fresh.sourceUrl;
+      if (fresh.observedAt) current.observedAt = fresh.observedAt;
+      if (fresh.status === 'LIVE' && current.status !== 'FT') {
+        current.status = 'LIVE'; current.hs = fresh.hs; current.as = fresh.as;
+        current.livePhase = fresh.livePhase;
+      }
       current.sourceOnline = true;
       if (fresh.id) current.id = fresh.id;
 
@@ -881,6 +908,7 @@ function mergeOnlineMatches(incoming=[]) {
       if (fresh.status === 'NS' && current.status === 'POSTPONED') current.status = 'NS';
 
       if (fresh.status === 'FT') {
+        if (current.hs !== fresh.hs || current.as !== fresh.as) delete current.goals;
         current.status = 'FT';
         current.hs = fresh.hs;
         current.as = fresh.as;
@@ -944,7 +972,7 @@ function applyOnlineLeagueTable(rows) {
   const benfica = leagueTable.find(row => row[0] === BENFICA);
   const liga = comp('liga');
   liga.shortDetail = `${benfica[7]} pontos em ${benfica[1]} jogos · 34 jornadas`;
-  liga.statusText = `O Benfica soma ${benfica[7]} pontos em ${benfica[1]} jogos: ${benfica[2]} vitórias, ${benfica[3]} empates e ${benfica[4]} derrotas. Classificação recebida do TheSportsDB.`;
+  liga.statusText = `O Benfica soma ${benfica[7]} pontos em ${benfica[1]} jogos: ${benfica[2]} vitórias, ${benfica[3]} empates e ${benfica[4]} derrotas. Classificação recebida de ${leagueTableSource}.`;
   return true;
 }
 
@@ -957,6 +985,7 @@ function saveOnlineCache(events, tableRows, receivedAt = Date.now()) {
   }
   if (tableRows?.length) {
     onlineSnapshot.tableRows = tableRows;
+    onlineSnapshot.tableSource = leagueTableSource;
     onlineSnapshot.tableUpdatedAt = receivedAt;
   }
   try { localStorage.setItem(ONLINE_CACHE_KEY, JSON.stringify(onlineSnapshot)); } catch {}
@@ -974,15 +1003,18 @@ function applyOnlineCache() {
     if (freshCacheStamp(cache.eventsUpdatedAt) && Array.isArray(cache.events)) {
       const events = cache.events.filter(event => event && event.sourceOnline &&
         comp(event.competition) && [event.home, event.away].includes(BENFICA) &&
-        ['NS','FT','POSTPONED'].includes(event.status) &&
-        (event.status !== 'FT' || (validScore(event.hs) !== null && validScore(event.as) !== null)));
+        ['NS','FT','LIVE','POSTPONED'].includes(event.status) &&
+        (!['FT','LIVE'].includes(event.status) || (validScore(event.hs) !== null && validScore(event.as) !== null)));
       if (events.length) {
+        // A cached live score is historical evidence, never a current live state.
+        events.forEach(event => { if (event.status === 'LIVE') { event.status = 'NS'; delete event.livePhase; } });
         mergeOnlineMatches(events);
         onlineSnapshot.events = events;
         onlineSnapshot.eventsUpdatedAt = cache.eventsUpdatedAt;
         used = true;
       }
     }
+    leagueTableSource = cache.tableSource || 'TheSportsDB';
     if (freshCacheStamp(cache.tableUpdatedAt) && applyOnlineLeagueTable(cache.tableRows)) {
       leagueTableUpdatedAt = cache.tableUpdatedAt;
       onlineSnapshot.tableRows = cache.tableRows;
@@ -1024,7 +1056,128 @@ function refreshOnlineData() {
   return onlineRefreshPromise;
 }
 
+
+function officialCalendarMatches(data) {
+  const stamp = new Date(data?.fetchedAt).getTime();
+  if (data?.season !== SPORTSDB_SEASON || !freshCacheStamp(stamp) || !Array.isArray(data.matches)) return [];
+  return data.matches.filter(match => match?.source === 'Liga Portugal' && match.competition === 'taca-liga' &&
+    match.status === 'NS' && (!match.kickoffUtc || (Number.isFinite(new Date(match.kickoffUtc).getTime()) && /Z$/.test(match.kickoffUtc))) && /^\d{4}-\d{2}-\d{2}$/.test(match.date || '') &&
+    /^https:\/\/www\.ligaportugal\.pt\/match\/20262027\/allianzcup\/\d+\/\d+$/.test(match.sourceUrl || '') &&
+    (match.home === BENFICA || match.away === BENFICA)).map(match => ({...match,
+      home:canonicalTeamName(match.home), away:canonicalTeamName(match.away), observedAt:stamp}));
+}
+
+function espnEventToMatch(event) {
+  if (event?.season?.year !== ESPN_SEASON || !event.id) return null;
+  const fixture = event.competitions?.[0];
+  const home = fixture?.competitors?.find(team => team.homeAway === 'home');
+  const away = fixture?.competitors?.find(team => team.homeAway === 'away');
+  if (!home || !away || ![home.team?.id, away.team?.id].includes('1929')) return null;
+  const competitions = {'por.1':'liga', 'por.taca.portugal':'taca-portugal',
+    'por.taca.da.liga':'taca-liga', 
+    'uefa.europa':'europa', 'uefa.europa_qual':'europa',
+    'uefa.champions':'champions', 'uefa.champions_qual':'champions',
+    'uefa.europa.conf':'conference', 'uefa.super_cup':'uefa-supercup'};
+  const competition = competitions[event.league?.slug];
+  if (!competition) return null;
+  const date = fixture.date || event.date;
+  if (typeof date !== 'string' || !/(?:Z|[+-]\d{2}:?\d{2})$/.test(date)) return null;
+  const kickoff = new Date(date);
+  if (!Number.isFinite(kickoff.getTime())) return null;
+  if (kickoff < new Date('2026-07-01') || kickoff >= new Date('2027-07-01')) return null;
+  const state = fixture.status?.type;
+  if (!state) return null;
+  let status = state.completed === true ? 'FT' : state.state === 'in' ? 'LIVE' :
+    /POSTPONED|CANCELED|SUSPENDED|ABANDONED/.test(state.name || '') ? 'POSTPONED' :
+    state.state === 'pre' ? 'NS' : null;
+  if (!status) return null;
+  const score = team => validScore(typeof team.score === 'object' ? team.score?.value : team.score);
+  const hs = score(home), as = score(away);
+  if (['FT','LIVE'].includes(status) && (hs === null || as === null)) return null;
+  const localDate = new Intl.DateTimeFormat('en-CA', {timeZone:DISPLAY_TIME_ZONE,
+    year:'numeric', month:'2-digit', day:'2-digit'}).format(kickoff);
+  return {id:'espn-' + event.id, competition,
+    round: competition === 'liga' ? 'Liga' : event.league.slug.endsWith('_qual') ? 'Qualificação' : 'Fase de liga',
+    date:localDate, time:null,
+    kickoffUtc: fixture.timeValid === true && event.timeValid !== false ? kickoff.toISOString() : null,
+    home:canonicalTeamName(home.team.displayName), away:canonicalTeamName(away.team.displayName),
+    status, hs:['FT','LIVE'].includes(status) ? hs : undefined,
+    as:['FT','LIVE'].includes(status) ? as : undefined,
+    livePhase:status === 'LIVE' ? fixture.status.displayClock || 'Jogo em curso' : undefined,
+    venue:fixture.venue?.fullName || null, sourceOnline:true, source:'ESPN',
+    sourceUrl:'https://www.espn.com/soccer/match/_/gameId/' + event.id, observedAt:Date.now()};
+}
+
+function espnStandingsRows(data) {
+  if (data?.season?.year !== ESPN_SEASON) return [];
+  const group = data.children?.find(child => child.standings?.entries?.length === 18);
+  if (!group) return [];
+  return group.standings.entries.map(entry => {
+    const stats = Object.fromEntries((entry.stats || []).map(stat => [stat.name, stat.value]));
+    return {strTeam:entry.team?.displayName, strSeason:SPORTSDB_SEASON,
+      intRank:stats.rank, intPlayed:stats.gamesPlayed, intWin:stats.wins, intDraw:stats.ties,
+      intLoss:stats.losses, intGoalsFor:stats.pointsFor, intGoalsAgainst:stats.pointsAgainst,
+      intPoints:stats.points};
+  });
+}
+
 async function performOnlineRefresh() {
+  const button = document.getElementById('refreshDataButton');
+  if (button) button.disabled = true;
+  setOnlineStatus('A consultar a ESPN…', 'loading');
+  try {
+    const results = await Promise.allSettled([
+      fetchJsonSafe(ESPN_SCHEDULE + '&fixture=false'),
+      fetchJsonSafe(ESPN_SCHEDULE + '&fixture=true'), fetchJsonSafe(ESPN_STANDINGS),
+      fetchJsonSafe(OFFICIAL_CALENDAR).catch(() => fetchJsonSafe('data/official-calendar.json'))
+    ]);
+    const incoming = [], details = [];
+    let useful = 0;
+    for (let i=0; i<2; i++) {
+      const result = results[i];
+      const events = result.status === 'fulfilled' && Array.isArray(result.value.events)
+        ? result.value.events.map(espnEventToMatch).filter(Boolean) : [];
+      if (events.length) { useful++; incoming.push(...events); }
+      details.push((i ? 'Calendário' : 'Resultados') + ': ' +
+        (events.length ? events.length + ' jogos' : 'sem dados válidos') + '.');
+    }
+    const rows = results[2].status === 'fulfilled' ? espnStandingsRows(results[2].value) : [];
+    const previousSource = leagueTableSource;
+    leagueTableSource = 'ESPN';
+    const accepted = applyOnlineLeagueTable(rows);
+    if (!accepted) leagueTableSource = previousSource;
+    if (accepted) useful++;
+    const official = results[3].status === 'fulfilled' ? officialCalendarMatches(results[3].value) : [];
+    if (official.length) { incoming.push(...official); details.push('Liga Portugal: calendário oficial da Taça da Liga recebido.'); }
+    if (!useful) {
+      if (official.length) { mergeOnlineMatches(official); saveOnlineCache(official, []); renderHero(); renderCompetitionCards(); }
+      return await performSportsDbRefresh();
+    }
+    const changed = mergeOnlineMatches(incoming), stamp = Date.now();
+    if (accepted) leagueTableUpdatedAt = stamp;
+    saveOnlineCache(incoming, accepted ? rows : [], stamp);
+    if (changed || accepted) {
+      renderHero(); renderCompetitionCards();
+      if (currentCompetition) openCompetition(currentCompetition, currentDetail, false);
+    }
+    details.push('Classificação: ' + (accepted ? '18 clubes.' : 'tabela anterior preservada.'));
+    const leagueGames = matches.filter(match => match.competition === 'liga' && match.source === 'ESPN');
+    const europeGames = matches.filter(match => match.competition === 'europa' && match.source === 'ESPN');
+    details.push('ESPN: ' + leagueGames.length + '/34 jogos da Liga; ' + europeGames.length + ' jogos europeus.');
+    const clock = new Intl.DateTimeFormat('pt-PT', {timeZone:DISPLAY_TIME_ZONE,
+      day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}).format(new Date(stamp));
+    setOnlineStatus('ESPN · ' + (useful === 3 ? 'dados recebidos' : 'atualização parcial') + ' · ' + clock,
+      useful === 3 ? 'updated' : 'partial', details.join(' '));
+    const note = document.getElementById('dataCoverage');
+    if (note) note.textContent = details.join(' ') +
+      ' Taça de Portugal e estados de qualificação: cobertura ainda por validar. Horas só aparecem quando confirmadas pela fonte. Consulta a cada 5 minutos; não é transmissão em direto.';
+  } catch (error) {
+    setOnlineStatus('Atualização falhou · dados anteriores', 'error');
+    console.warn('ESPN: atualização falhou', error);
+  } finally { if (button) button.disabled = false; }
+}
+
+async function performSportsDbRefresh() {
   const button = document.getElementById('refreshDataButton');
   if (button) button.disabled = true;
   setOnlineStatus('A consultar a fonte…', 'loading');
