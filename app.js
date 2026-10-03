@@ -58,8 +58,8 @@ const competitionData = [
       { label: '4.ª eliminatória', value: 'Qualificado · adversário por sortear' },
       { label: 'Estado', value: 'Em prova' }
     ],
-    sourceLabel: 'FPF / calendário 2026/27',
-    sourceUrl: 'https://www.fpf.pt/'
+    sourceLabel: 'Liga Portugal · entrada na prova',
+    sourceUrl: 'https://www.ligaportugal.pt/news/28742/sorteio-da-3.a-eliminatoria-da-taca-de-portugal'
   },
   {
     id: 'taca-liga',
@@ -721,6 +721,7 @@ let leagueTableSource = 'TheSportsDB';
 const ESPN_SEASON = 2026;
 const OFFICIAL_CALENDAR = 'https://raw.githubusercontent.com/pajogusi/benfica-match-center/main/data/official-calendar.json';
 const ESPN_SCHEDULE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/1929/schedule?season=' + ESPN_SEASON;
+const ESPN_CUP_SCHEDULE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/por.taca.portugal/teams/1929/schedule?season=' + ESPN_SEASON;
 const ESPN_STANDINGS = 'https://site.api.espn.com/apis/v2/sports/soccer/por.1/standings?season=' + ESPN_SEASON;
 let onlineSnapshot = {season: SPORTSDB_SEASON, events: [], tableRows: []};
 
@@ -872,11 +873,17 @@ function mergeOnlineMatches(incoming=[]) {
   let changed = false;
 
   for (const fresh of incoming) {
-    const candidates = matches.filter(m => sameFixture(m, fresh));
+    const candidates = matches.filter(m => sameFixture(m, fresh) || (fresh.competition === 'taca-portugal' && m.competition === fresh.competition && m.round === fresh.round && [m.home,m.away].includes('Adversário por sortear')));
     const current = candidates.length === 1 ? candidates[0] : null;
 
     if (current) {
       const before = JSON.stringify(current);
+      if ([current.home,current.away].includes('Adversário por sortear')) {
+        current.home = fresh.home; current.away = fresh.away; delete current.note;
+      }
+      if (fresh.competition === 'taca-portugal') current.round = fresh.round;
+      if (fresh.winner) current.winner = fresh.winner;
+      else if (fresh.status === 'FT') delete current.winner;
 
       if (fresh.kickoffUtc) {
         current.date = fresh.date;
@@ -1010,6 +1017,7 @@ function applyOnlineCache() {
         // A cached live score is historical evidence, never a current live state.
         events.forEach(event => { if (event.status === 'LIVE') { event.status = 'NS'; delete event.livePhase; } });
         mergeOnlineMatches(events);
+        updatePortugalCupState();
         onlineSnapshot.events = events;
         onlineSnapshot.eventsUpdatedAt = cache.eventsUpdatedAt;
         used = true;
@@ -1078,6 +1086,49 @@ function officialCalendarMatches(data) {
       home:canonicalTeamName(match.home), away:canonicalTeamName(match.away), observedAt:stamp}));
 }
 
+
+function portugalCupRound(name='') {
+  const stages = {'1st Round':'1.ª eliminatória','2nd Round':'2.ª eliminatória',
+    '3rd Round':'3.ª eliminatória','4th Round':'4.ª eliminatória','5th Round':'5.ª eliminatória',
+    'Round of 16':'Oitavos de final','Quarterfinals':'Quartos de final','Semifinals':'Meias-finais','Final':'Final'};
+  return stages[name] || 'Eliminatória por confirmar';
+}
+
+function validCupSchedule(data) {
+  return data?.team?.id === '1929' && (data.requestedSeason || data.season)?.year === ESPN_SEASON && Array.isArray(data.events);
+}
+
+function updatePortugalCupState() {
+  const games = matches.filter(match => match.competition === 'taca-portugal' && match.source === 'ESPN');
+  if (!games.length) return;
+  const cup = comp('taca-portugal');
+  const next = games.filter(match => ['NS','LIVE','POSTPONED'].includes(match.status)).sort((a,b) => (a.date || '').localeCompare(b.date || ''))[0];
+  const last = games.filter(match => match.status === 'FT').sort((a,b) => (b.date || '').localeCompare(a.date || ''))[0];
+  cup.sourceLabel = 'ESPN · jogos da Taça de Portugal';
+  cup.sourceUrl = 'https://www.espn.com/soccer/team/fixtures/_/id/1929/league/por.taca.portugal/benfica';
+  if (last?.winner && last.winner !== BENFICA) {
+    cup.status = 'Eliminado'; cup.tone = 'out';
+    cup.statusTitle = 'Eliminado na ' + last.round;
+    cup.shortDetail = last.round + ' · ' + scoreText(last);
+    cup.statusText = 'Resultado recebido da ESPN: ' + last.home + ' ' + scoreText(last) + ' ' + last.away + '. O adversário foi indicado como vencedor.';
+    cup.stages = [{label:last.round,value:cup.statusText},{label:'Estado',value:'Eliminado'}];
+  } else if (next) {
+    cup.status = 'Em prova'; cup.tone = 'qualified'; cup.statusTitle = next.round;
+    cup.shortDetail = next.round + ' · ' + (next.home === BENFICA ? next.away : next.home);
+    cup.statusText = next.home + ' – ' + next.away + '. ' + dateText(next) + '. Dados recebidos da ESPN.';
+    cup.stages = [{label:next.round,value:cup.statusText},{label:'Estado',value:next.status === 'POSTPONED' ? 'Adiado' : 'Em prova'}];
+  } else if (last) {
+    const won = last.winner === BENFICA;
+    cup.status = won ? last.round === 'Final' ? 'Vencedor' : 'Qualificado' : 'A confirmar';
+    cup.tone = won ? 'qualified' : 'conditional';
+    cup.statusTitle = last.round;
+    cup.shortDetail = last.round + ' · ' + scoreText(last);
+    cup.statusText = last.home + ' ' + scoreText(last) + ' ' + last.away + '. ' +
+      (won ? last.round === 'Final' ? 'Benfica indicado como vencedor da final.' : 'Benfica indicado como vencedor; próximo jogo por publicar.' : 'Apuramento por confirmar pela fonte.');
+    cup.stages = [{label:last.round,value:cup.statusText},{label:'Estado',value:cup.status}];
+  }
+}
+
 function espnEventToMatch(event) {
   if (event?.season?.year !== ESPN_SEASON || !event.id) return null;
   const fixture = event.competitions?.[0];
@@ -1108,12 +1159,13 @@ function espnEventToMatch(event) {
   const localDate = new Intl.DateTimeFormat('en-CA', {timeZone:DISPLAY_TIME_ZONE,
     year:'numeric', month:'2-digit', day:'2-digit'}).format(kickoff);
   return {id:'espn-' + event.id, competition,
-    round: competition === 'liga' ? 'Liga' : event.league.slug.endsWith('_qual') ? 'Qualificação' : 'Fase de liga',
+    round: competition === 'taca-portugal' ? portugalCupRound(event.seasonType?.name) : competition === 'taca-liga' ? event.seasonType?.name || 'Taça da Liga' : competition === 'liga' ? 'Liga' : event.league.slug.endsWith('_qual') ? 'Qualificação' : 'Fase de liga',
     date:localDate, time:null,
     kickoffUtc: fixture.timeValid === true && event.timeValid !== false ? kickoff.toISOString() : null,
     home:canonicalTeamName(home.team.displayName), away:canonicalTeamName(away.team.displayName),
     status, hs:['FT','LIVE'].includes(status) ? hs : undefined,
     as:['FT','LIVE'].includes(status) ? as : undefined,
+    winner:home.winner === true ? canonicalTeamName(home.team.displayName) : away.winner === true ? canonicalTeamName(away.team.displayName) : null,
     livePhase:status === 'LIVE' ? fixture.status.displayClock || 'Jogo em curso' : undefined,
     venue:fixture.venue?.fullName || null, sourceOnline:true, source:'ESPN',
     sourceUrl:'https://www.espn.com/soccer/match/_/gameId/' + event.id, observedAt:Date.now()};
@@ -1140,7 +1192,9 @@ async function performOnlineRefresh() {
     const results = await Promise.allSettled([
       fetchJsonSafe(ESPN_SCHEDULE + '&fixture=false'),
       fetchJsonSafe(ESPN_SCHEDULE + '&fixture=true'), fetchJsonSafe(ESPN_STANDINGS),
-      fetchJsonSafe(OFFICIAL_CALENDAR).catch(() => fetchJsonSafe('data/official-calendar.json'))
+      fetchJsonSafe(OFFICIAL_CALENDAR).catch(() => fetchJsonSafe('data/official-calendar.json')),
+      fetchJsonSafe(ESPN_CUP_SCHEDULE + '&fixture=false'),
+      fetchJsonSafe(ESPN_CUP_SCHEDULE + '&fixture=true')
     ]);
     const incoming = [], details = [];
     let useful = 0;
@@ -1153,6 +1207,14 @@ async function performOnlineRefresh() {
         (events.length ? events.length + ' jogos' : 'sem dados válidos') + '.');
     }
     const rows = results[2].status === 'fulfilled' ? espnStandingsRows(results[2].value) : [];
+    let cupChecked = false;
+    for (const index of [4,5]) {
+      const result = results[index];
+      if (result.status !== 'fulfilled' || !validCupSchedule(result.value)) continue;
+      cupChecked = true;
+      incoming.push(...result.value.events.map(espnEventToMatch).filter(match => match?.competition === 'taca-portugal'));
+    }
+    if (!useful && incoming.some(match => match.competition === 'taca-portugal')) useful = 1;
     const previousSource = leagueTableSource;
     leagueTableSource = 'ESPN';
     const accepted = applyOnlineLeagueTable(rows);
@@ -1165,23 +1227,26 @@ async function performOnlineRefresh() {
       return await performSportsDbRefresh();
     }
     const changed = mergeOnlineMatches(incoming), stamp = Date.now();
+    updatePortugalCupState();
     if (accepted) leagueTableUpdatedAt = stamp;
     saveOnlineCache(incoming, accepted ? rows : [], stamp);
     if (changed || accepted) {
       renderHero(); renderCompetitionCards();
       if (currentCompetition) openCompetition(currentCompetition, currentDetail, false);
     }
+    details.push('Taça de Portugal: ' + (cupChecked ? incoming.some(match => match.competition === 'taca-portugal') ? 'jogos consultados.' : 'consulta válida; nenhum jogo do Benfica publicado.' : 'consulta indisponível; dados anteriores preservados.'));
     details.push('Classificação: ' + (accepted ? '18 clubes.' : 'tabela anterior preservada.'));
     const leagueGames = matches.filter(match => match.competition === 'liga' && match.source === 'ESPN');
     const europeGames = matches.filter(match => match.competition === 'europa' && match.source === 'ESPN');
     details.push('ESPN: ' + leagueGames.length + '/34 jogos da Liga; ' + europeGames.length + ' jogos europeus.');
     const clock = new Intl.DateTimeFormat('pt-PT', {timeZone:DISPLAY_TIME_ZONE,
       day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}).format(new Date(stamp));
-    setOnlineStatus('ESPN · ' + (useful === 3 ? 'dados recebidos' : 'atualização parcial') + ' · ' + clock,
-      useful === 3 ? 'updated' : 'partial', details.join(' '));
+    const fullCoverage = useful === 3 && cupChecked;
+    setOnlineStatus('ESPN · ' + (fullCoverage ? 'dados recebidos' : 'atualização parcial') + ' · ' + clock,
+      fullCoverage ? 'updated' : 'partial', details.join(' '));
     const note = document.getElementById('dataCoverage');
     if (note) note.textContent = details.join(' ') +
-      ' Taça de Portugal e estados de qualificação: cobertura ainda por validar. Horas só aparecem quando confirmadas pela fonte. Consulta a cada 5 minutos; não é transmissão em direto.';
+      ' Taça de Portugal: consulta gratuita ativa; o adversário depende da publicação do sorteio. Estados das outras competições continuam a ser dados de base. Horas só aparecem quando confirmadas pela fonte. Consulta a cada 5 minutos; não é transmissão em direto.';
   } catch (error) {
     setOnlineStatus('Atualização falhou · dados anteriores', 'error');
     console.warn('ESPN: atualização falhou', error);
