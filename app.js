@@ -306,6 +306,7 @@ function upcomingMatches() {
 }
 
 function tvChannel(m) {
+  if (m.tvSource === 'SL Benfica' && (!freshCacheStamp(m.tvFetchedAt) || m.tvDate !== m.date)) return 'Por confirmar';
   return m.tv || 'Por confirmar';
 }
 
@@ -634,7 +635,7 @@ function renderEuropaFixturesTable() {
     <div class="section-head"><div><h2>Próximos jogos da fase de liga</h2><p>Datas recebidas da fonte quando disponíveis. Os horários provisórios permanecem por confirmar.</p></div></div>
     <div class="table-wrap europa-fixtures-table">
       <table class="standings-table">
-        <thead><tr><th>#</th><th>Adversário</th><th>Local</th><th>Data</th></tr></thead>
+        <thead><tr><th>#</th><th>Adversário</th><th>Local</th><th>Data</th><th>TV</th></tr></thead>
         <tbody>${fixtures.map((m,i) => {
           const opponent = m.home === BENFICA ? m.away : m.home;
           const location = m.home === BENFICA ? 'Casa' : 'Fora';
@@ -644,6 +645,7 @@ function renderEuropaFixturesTable() {
             <td><span class="table-team">${clubCrestImg(opponent,'mini-team-crest')}<strong>${escapeHtml(opponent)}</strong></span></td>
             <td><span class="fixture-location ${locationClass}">${location}</span></td>
             <td class="fixture-date">${escapeHtml(europaFixtureDate(m))}</td>
+            <td>${escapeHtml(tvChannel(m))}</td>
           </tr>`;
         }).join('')}</tbody>
       </table>
@@ -728,6 +730,7 @@ function matchCard(m) {
     </div>
     <div class="match-bottom">
       <span>${escapeHtml(m.note || m.venue || 'Local por confirmar')}</span>
+      ${m.status !== 'FT' ? `<span>TV: ${escapeHtml(tvChannel(m))}</span>` : ''}
       ${r ? `<span class="result-badge ${r}">${resultLabel(r)}</span>` : '<span class="future-badge">Agendado</span>'}
     </div>
   </article>`;
@@ -750,6 +753,7 @@ let europaTableUpdatedAt = null;
 let europaTableLastCheckFailed = false;
 let leagueTableSource = 'TheSportsDB';
 const ESPN_SEASON = 2026;
+const OFFICIAL_TV = 'https://raw.githubusercontent.com/pajogusi/benfica-match-center/main/data/official-tv.json';
 const OFFICIAL_CALENDAR = 'https://raw.githubusercontent.com/pajogusi/benfica-match-center/main/data/official-calendar.json';
 const ESPN_SCHEDULE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/1929/schedule?season=' + ESPN_SEASON;
 const ESPN_CUP_SCHEDULE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/por.taca.portugal/teams/1929/schedule?season=' + ESPN_SEASON;
@@ -802,6 +806,10 @@ function canonicalTeamName(name='') {
     ['c d nacional', 'Nacional'],
     ['estrela', 'Estrela Amadora'],
     ['omonia nicosia', 'Omonia'],
+    ['ac omonia nicosia', 'Omonia'],
+    ['celtic glasgow', 'Celtic'],
+    ['kks lech poznan', 'Lech Poznań'],
+    ['vitoria plzen', 'Viktoria Plzeň'],
     ['viktoria plzen', 'Viktoria Plzeň'],
     ['lech poznan', 'Lech Poznań'],
     ['nec nijmegen', 'NEC'],
@@ -1063,6 +1071,7 @@ function applyOnlineCache() {
       used = true;
     }
     if (freshCacheStamp(cache.europaTableUpdatedAt) && applyEuropaTable(cache.europaStandings, cache.europaTableUpdatedAt)) used = true;
+    if (applyOfficialTv(cache.officialTv)) used = true;
     if (used) setOnlineStatus('Dados guardados · a confirmar online', 'cached');
   } catch {}
 }
@@ -1204,6 +1213,25 @@ function espnEventToMatch(event) {
     sourceUrl:'https://www.espn.com/soccer/match/_/gameId/' + event.id, observedAt:Date.now()};
 }
 
+function applyOfficialTv(data) {
+  const stamp = Date.parse(data?.fetchedAt);
+  if (data?.season !== SPORTSDB_SEASON || data.sourceUrl !== 'https://www.slbenfica.pt/pt-pt/futebol/calendario' ||
+    !freshCacheStamp(stamp) || !Array.isArray(data.matches) || !data.matches.length) return false;
+  const records = data.matches.map(row => ({...row,home:canonicalTeamName(row.home),away:canonicalTeamName(row.away)}));
+  if (records.some(row => ![row.home,row.away].includes(BENFICA) || !/^202[67]-\d{2}-\d{2}$/.test(row.date || '') ||
+    !Number.isFinite(Date.parse(row.date)) || row.date < '2026-07-01' || row.date >= '2027-07-01' ||
+    !Array.isArray(row.channels) || row.channels.some(channel => typeof channel !== 'string' ||
+    !channel.trim() || channel.length > 50 || /[<>\x00-\x1f]/.test(channel)))) return false;
+  for (const record of records) {
+    for (const match of matches.filter(m => m.date === record.date && m.home === record.home && m.away === record.away)) {
+      match.tv = record.channels.join(' / ');
+      match.tvSource = 'SL Benfica'; match.tvFetchedAt = stamp; match.tvDate = record.date;
+    }
+  }
+  onlineSnapshot.officialTv = data;
+  return true;
+}
+
 function europaStandingsRows(data) {
   if (data?.id !== '2310') return [];
   const group = data.children?.find(child => child.name === 'League Phase' &&
@@ -1272,7 +1300,8 @@ async function performOnlineRefresh() {
       fetchJsonSafe(OFFICIAL_CALENDAR).catch(() => fetchJsonSafe('data/official-calendar.json')),
       fetchJsonSafe(ESPN_CUP_SCHEDULE + '&fixture=false'),
       fetchJsonSafe(ESPN_CUP_SCHEDULE + '&fixture=true'),
-      fetchJsonSafe(ESPN_EUROPA_STANDINGS)
+      fetchJsonSafe(ESPN_EUROPA_STANDINGS),
+      fetchJsonSafe(OFFICIAL_TV).catch(() => fetchJsonSafe('data/official-tv.json'))
     ]);
     const incoming = [], details = [];
     let useful = 0;
@@ -1309,10 +1338,12 @@ async function performOnlineRefresh() {
       return await performSportsDbRefresh();
     }
     const changed = mergeOnlineMatches(incoming), stamp = Date.now();
+    const tvAccepted = results[7]?.status === 'fulfilled' && applyOfficialTv(results[7].value);
+    details.push('Canais TV: ' + (tvAccepted ? 'calendário oficial do Benfica recebido.' : 'consulta oficial indisponível.'));
     updatePortugalCupState();
     if (accepted) leagueTableUpdatedAt = stamp;
     saveOnlineCache(incoming, accepted ? rows : [], stamp);
-    if (changed || accepted || europaAccepted) {
+    if (changed || accepted || europaAccepted || tvAccepted) {
       renderHero(); renderCompetitionCards();
       if (currentCompetition) openCompetition(currentCompetition, currentDetail, false);
     }
@@ -1323,7 +1354,7 @@ async function performOnlineRefresh() {
     details.push('ESPN: ' + leagueGames.length + '/34 jogos da Liga; ' + europeGames.length + ' jogos europeus.');
     const clock = new Intl.DateTimeFormat('pt-PT', {timeZone:DISPLAY_TIME_ZONE,
       day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}).format(new Date(stamp));
-    const fullCoverage = useful === 3 && cupChecked && europaAccepted;
+    const fullCoverage = useful === 3 && cupChecked && europaAccepted && tvAccepted;
     setOnlineStatus('ESPN · ' + (fullCoverage ? 'dados recebidos' : 'atualização parcial') + ' · ' + clock,
       fullCoverage ? 'updated' : 'partial', details.join(' '));
     const note = document.getElementById('dataCoverage');

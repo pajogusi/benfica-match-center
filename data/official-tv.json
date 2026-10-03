@@ -1,0 +1,115 @@
+{
+  "season": "2026-2027",
+  "fetchedAt": "2026-10-03T21:26:25.904065+00:00",
+  "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario",
+  "matches": [
+    {
+      "id": "sr:match:72530962",
+      "date": "2026-10-11",
+      "home": "SL Benfica",
+      "away": "Vitória SC",
+      "channels": [
+        "BTV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:74172980",
+      "date": "2026-10-15",
+      "home": "SL Benfica",
+      "away": "Celtic Glasgow",
+      "channels": [
+        "SPORT TV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:74173018",
+      "date": "2026-10-22",
+      "home": "AC Omonia Nicosia",
+      "away": "SL Benfica",
+      "channels": [
+        "SPORT TV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:72530976",
+      "date": "2026-10-26",
+      "home": "Santa Clara",
+      "away": "SL Benfica",
+      "channels": [
+        "SPORT TV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:72708164",
+      "date": "2026-10-29",
+      "home": "SL Benfica",
+      "away": "Gil Vicente FC",
+      "channels": [],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:72530998",
+      "date": "2026-11-02",
+      "home": "SL Benfica",
+      "away": "FC Alverca",
+      "channels": [
+        "BTV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:74173056",
+      "date": "2026-11-05",
+      "home": "SL Benfica",
+      "away": "KKS Lech Poznan",
+      "channels": [
+        "SPORT TV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:72531002",
+      "date": "2026-11-08",
+      "home": "CF Estrela Amadora",
+      "away": "SL Benfica",
+      "channels": [
+        "SPORT TV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:74173064",
+      "date": "2026-11-26",
+      "home": "Vitória Plzen",
+      "away": "SL Benfica",
+      "channels": [
+        "SPORT TV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:72531032",
+      "date": "2026-11-30",
+      "home": "SL Benfica",
+      "away": "FC Famalicão",
+      "channels": [
+        "BTV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    }
+  ]
+}

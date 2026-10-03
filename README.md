@@ -67,4 +67,8 @@ O crédito PJCore Labs usa o símbolo original do repositório da marca (`websit
 
 A página inicial volta a apresentar a aplicação; a versão do service worker e as referências aos recursos são atualizadas juntas. A recolha oficial inicia automaticamente na integração do workflow no ramo principal e prossegue a cada seis horas. O contador GoatCounter é preservado; indisponibilidade de rede ou bloqueio de privacidade é identificada sem atribuir uma causa não confirmada.
 
-Os 40 testes automatizados passaram no GitHub Actions. A publicação no GitHub Pages e a recolha oficial passaram em 03/10/2026. A página pública foi verificada no navegador: dados recebidos, jogo Benfica–Gil Vicente em 29/10 às 20h45, contador a apresentar 34 visitas e símbolo PJCore Labs carregado a 40 × 40 px. Não foi observado transbordo horizontal na janela de teste.
+Os 46 testes automatizados passaram no GitHub Actions. A publicação no GitHub Pages e a recolha oficial passaram em 03/10/2026. A página pública foi verificada no navegador: dados recebidos, jogo Benfica–Gil Vicente em 29/10 às 20h45, contador a apresentar 34 visitas e símbolo PJCore Labs carregado a 40 × 40 px. Não foi observado transbordo horizontal na janela de teste.
+
+## Canais TV oficiais
+
+O calendário público do SL Benfica fornece os canais TV. O coletor `tools/update_benfica_tv.py` usa apenas Python standard library e o endpoint público utilizado pela página oficial, sem conta ou chave. GitHub Actions recolhe os próximos jogos a cada seis horas. A página consulta o snapshot a cada cinco minutos e associa a TV pela data e pelas duas equipas. Dados de outra época, inválidos ou com mais de 24 horas são rejeitados; uma alteração de data invalida a associação anterior. Canais não anunciados aparecem como “Por confirmar”. “SPORTTV” é apresentado como “SPORT TV”, sem inventar o número do canal. A TV aparece no cartão inicial, nos próximos jogos e na tabela europeia.

@@ -21,7 +21,7 @@ function harness(fetch, espn=false) {
     localStorage: {getItem: key => storage.get(key) || null, setItem: (key, value) => storage.set(key, value)},
     location: {hash:'', pathname:'/', search:''},
     history: {pushState(){}, replaceState(){}}, window: {scrollTo(){}, addEventListener(){}},
-    Date, Intl, console, AbortController, setTimeout, clearTimeout, fetch: (url, options) => !espn && (url.includes('espn.com') || url.includes('official-calendar.json')) ? Promise.reject(Error('ESPN unavailable')) : fetch(url, options)
+    Date, Intl, console, AbortController, setTimeout, clearTimeout, fetch: (url, options) => !espn && (url.includes('espn.com') || url.includes('official-calendar.json') || url.includes('official-tv.json')) ? Promise.reject(Error('ESPN unavailable')) : fetch(url, options)
   });
   vm.runInContext(core, context);
   return {context, node, storage, run: code => vm.runInContext(code, context)};
@@ -168,6 +168,40 @@ test('full application startup renders and schedules data refresh', async () => 
 });
 
 const realEspn = name => JSON.parse(readFileSync(path.join(__dirname, 'fixtures', 'espn-' + name + '.json'), 'utf8'));
+function tvPayload(overrides={}) {
+  return {season:'2026-2027',fetchedAt:new Date().toISOString(),sourceUrl:'https://www.slbenfica.pt/pt-pt/futebol/calendario',
+    matches:[{date:'2026-10-11',home:'SL Benfica',away:'Vitória SC',channels:['BTV']}],...overrides};
+}
+test('official TV enriches the exact fixture and does not guess a numbered channel', () => {
+  const h = harness();
+  h.context.tvData=tvPayload();
+  h.run("matches.push({competition:'liga',home:BENFICA,away:'Vitória SC',date:'2026-10-11',status:'NS'})");
+  assert.equal(h.run('applyOfficialTv(tvData)'),true);
+  assert.equal(h.run("tvChannel(matches.at(-1))"),'BTV');
+  h.context.tvData=tvPayload({matches:[{date:'2026-10-11',home:'SL Benfica',away:'Vitória SC',channels:['SPORT TV']}]});
+  h.run('applyOfficialTv(tvData)');
+  assert.equal(h.run("tvChannel(matches.at(-1))"),'SPORT TV');
+  h.context.tvData=tvPayload({matches:[{date:'2026-10-11',home:'SL Benfica',away:'Vitória SC',channels:[]}]});
+  h.run('applyOfficialTv(tvData)');
+  assert.equal(h.run("tvChannel(matches.at(-1))"),'Por confirmar');
+});
+test('TV rejects stale snapshots and avoids leaking channels to rescheduled games', () => {
+  const h = harness();
+  h.context.tvData=tvPayload();
+  h.run("matches.push({competition:'liga',home:BENFICA,away:'Vitória SC',date:'2026-10-11',status:'NS'}); applyOfficialTv(tvData)");
+  h.run("matches.at(-1).date='2026-10-12'");
+  assert.equal(h.run('tvChannel(matches.at(-1))'),'Por confirmar');
+  for(const data of [tvPayload({season:'2025-2026'}),tvPayload({fetchedAt:new Date(Date.now()-86400001).toISOString()}),tvPayload({matches:[]})]) {
+    h.context.invalidTv=data;
+    assert.equal(h.run('applyOfficialTv(invalidTv)'),false);
+  }
+});
+test('TV cache restores official channel after restart', () => {
+  const h = harness();
+  h.context.tvData=tvPayload();
+  h.run("matches.push({competition:'liga',home:BENFICA,away:'Vitória SC',date:'2026-10-11',status:'NS'}); applyOfficialTv(tvData); saveOnlineCache([],[]); delete matches.at(-1).tv; applyOnlineCache()");
+  assert.equal(h.run('tvChannel(matches.at(-1))'),'BTV');
+});
 test('complete Europa table preserves source rank and highlights Benfica', () => {
   const h = harness();
   h.context.europaPayload = realEspn('europa-standings');
