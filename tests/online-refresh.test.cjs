@@ -237,3 +237,9 @@ test('official cup calendar corrects the old date without duplicating the quarte
   h.context.data.fetchedAt=new Date(Date.now()-25*3600000).toISOString();
   assert.equal(h.run('officialCalendarMatches(data).length'),0);
 });
+
+test('unconfirmed live evidence expires after two polling intervals', () => {
+  const h=harness();
+  h.run("matches.push({id:'stale-live',competition:'liga',home:'SL Benfica',away:'Test',status:'LIVE',hs:1,as:0,observedAt:Date.now()-11*60000}); expireLiveEvidence()");
+  assert.equal(h.run("matches.find(m => m.id === 'stale-live').status"), 'NS');
+});
