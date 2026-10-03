@@ -29,7 +29,7 @@ test('external API calls bypass the HTML offline fallback', () => {
   assert.equal(intercepted, false);
 });
 test('activation preserves caches belonging to other applications', async () => {
-  const {handlers, removed} = worker(null, null, ['pajo-home-v1','benfica-match-center-v27-portugal-time','benfica-match-center-v28-refresh-reliable','benfica-match-center-v29-free-sources']);
+  const {handlers, removed} = worker(null, null, ['pajo-home-v1','benfica-match-center-v27-portugal-time','benfica-match-center-v28-refresh-reliable','benfica-match-center-v30-online-ready']);
   let pending;
   handlers.activate({waitUntil:promise=>{pending=promise;}});
   await pending;

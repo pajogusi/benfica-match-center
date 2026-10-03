@@ -8,7 +8,7 @@
   <title>Benfica Match Center</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/benfica-crest.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=29-free-sources" />
+  <link rel="stylesheet" href="styles.css?v=30-online-ready" />
   <!-- GoatCounter: analytics + contador de visitas -->
   <script data-goatcounter="https://pajogusi.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
@@ -58,7 +58,7 @@
     <footer>
       <div>
         <strong>Benfica Match Center</strong>
-        <span>Projeto não oficial. Todas as horas são de Portugal Continental e estão sujeitas a alteração pelos organizadores.</span>
+        <span>Projeto independente e não oficial, sem afiliação ou aprovação do SL Benfica. Horas de Portugal Continental, sujeitas a alteração.</span>
       </div>
       <div class="goatcounter-box" aria-label="Contador de visitas">
         <span class="goatcounter-label">Visitas</span>
@@ -70,10 +70,14 @@
         <a href="https://www.ligaportugal.pt/" target="_blank" rel="noreferrer">Liga Portugal</a>
         <a href="https://pt.uefa.com/" target="_blank" rel="noreferrer">UEFA</a>
       </div>
+      <a class="pjcore-credit" href="https://pjcorelabs.com" target="_blank" rel="noopener noreferrer" aria-label="Desenvolvido pela PJCore Labs — abrir website">
+        <img src="icons/pjcorelabs.png" width="40" height="40" alt="" loading="lazy" />
+        <span><small>Desenvolvido pela</small><strong>PJCore Labs</strong></span>
+      </a>
     </footer>
   </div>
 
-  <script src="app.js?v=29-free-sources"></script>
+  <script src="app.js?v=30-online-ready"></script>
   <script>
     (function () {
       const el = document.getElementById('goatcounter-visits');
@@ -116,12 +120,12 @@
         })
         .catch(function () {
           if (!cached) {
-            el.textContent = 'bloqueado';
+            el.textContent = 'indisponível';
             el.setAttribute(
               'title',
-              'O bloqueio de privacidade impediu a leitura do contador.'
+              'Não foi possível consultar o contador. Pode haver uma falha de rede ou um bloqueio de privacidade.'
             );
-            el.setAttribute('aria-label', 'Contador bloqueado pelo navegador');
+            el.setAttribute('aria-label', 'Contador de visitas indisponível');
           }
         });
     })();

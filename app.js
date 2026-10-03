@@ -548,7 +548,7 @@ function renderStatus(c) {
   const intro = `
     <article class="status-panel ${c.tone}">
       <div>
-        <span class="panel-kicker">${c.id === 'liga' && leagueTableUpdatedAt ? 'Classificação recebida online' : 'Estado de base · ' + DATA_DATE}</span>
+        <span class="panel-kicker">${c.id === 'liga' && leagueTableUpdatedAt ? 'Classificação recebida online' : c.id === 'taca-portugal' && matches.some(m => m.competition === c.id && m.source === 'ESPN') ? 'Estado recebido da ESPN' : 'Estado de base · ' + DATA_DATE}</span>
         <h2>${escapeHtml(c.statusTitle)}</h2>
         <p>${escapeHtml(c.statusText)}</p>
       </div>
@@ -603,7 +603,7 @@ function renderEuropaFixturesTable() {
     });
 
   return `
-    <div class="section-head"><div><h2>Adversários da fase de liga</h2><p>Datas individuais ainda por confirmar pela UEFA. As horas serão acrescentadas mais tarde.</p></div></div>
+    <div class="section-head"><div><h2>Próximos jogos da fase de liga</h2><p>Datas recebidas da fonte quando disponíveis. Os horários provisórios permanecem por confirmar.</p></div></div>
     <div class="table-wrap europa-fixtures-table">
       <table class="standings-table">
         <thead><tr><th>#</th><th>Adversário</th><th>Local</th><th>Data</th></tr></thead>

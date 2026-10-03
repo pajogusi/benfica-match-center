@@ -1,5 +1,10 @@
 name: Atualizar calendário oficial gratuito
 on:
+  push:
+    branches: [main]
+    paths:
+      - tools/update_official_calendar.py
+      - .github/workflows/official-calendar.yml
   schedule:
     - cron: '17 */6 * * *'
   workflow_dispatch:

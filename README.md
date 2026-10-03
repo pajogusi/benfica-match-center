@@ -16,8 +16,9 @@ Os dados-base foram verificados em 22/08/2026 em fontes oficiais do SL Benfica, 
 
 ## Atualização dos dados
 
-A página inicial continua em manutenção. A aplicação preservada está em
-`benfica.html`; esta alteração não reabre o site ao público.
+A página inicial está preparada para reabrir a aplicação. `index.html` e
+`benfica.html` apresentam a mesma interface. As alterações permanecem no ramo de
+preparação até à integração no ramo principal; a versão pública continua em manutenção.
 
 - Consulta ao abrir, botão “Atualizar dados”, nova consulta a cada cinco minutos enquanto a página está visível e ao regressar após esse intervalo.
 - Pedidos com limite de dez segundos, sem consultas concorrentes e com intervalo mínimo de trinta segundos.
@@ -58,3 +59,11 @@ Os testes incluem respostas reais reduzidas, recolhidas em 03/10/2026, além de 
 ## Marcas e emblemas
 
 Projeto não oficial e sem afiliação com o SL Benfica, Liga Portugal, FPF ou UEFA. Os nomes, emblemas e logótipos pertencem aos respetivos titulares e são apresentados apenas para identificar clubes e competições.
+
+## Preparação da reabertura
+
+O crédito PJCore Labs usa o símbolo original do repositório da marca (`website/img/pjcorelabs-symbol-clean.png`), copiado sem alterações para `icons/pjcorelabs.png`. Aparece pequeno no canto inferior direito do rodapé e aponta para pjcorelabs.com. O aviso de projeto independente e não oficial permanece separado do emblema do clube.
+
+A página inicial volta a apresentar a aplicação; a versão do service worker e as referências aos recursos são atualizadas juntas. A recolha oficial inicia automaticamente na integração do workflow no ramo principal e prossegue a cada seis horas. O contador GoatCounter é preservado; indisponibilidade de rede ou bloqueio de privacidade é identificada sem atribuir uma causa não confirmada.
+
+Os testes automatizados passam e os recursos locais foram verificados. A confirmação visual no navegador está pendente: o navegador de teste recusou abrir o servidor local (`ERR_BLOCKED_BY_CLIENT`). A publicação e a execução do workflow no GitHub ainda não foram realizadas nesta preparação.
