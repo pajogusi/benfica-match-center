@@ -488,7 +488,25 @@ function updateLiveCountdown() {
   el.textContent = countdown(m);
 }
 
+function updateEuropaState() {
+  const games = matches.filter(m => m.competition === 'europa' && m.source === 'ESPN' &&
+    /Fase de liga/.test(m.round || ''));
+  if (!games.length) return;
+  const finished = games.filter(m => m.status === 'FT' && Number.isFinite(m.hs) && Number.isFinite(m.as));
+  const points = finished.reduce((sum, m) => {
+    const scored = m.home === BENFICA ? m.hs : m.as;
+    const conceded = m.home === BENFICA ? m.as : m.hs;
+    return sum + (scored > conceded ? 3 : scored === conceded ? 1 : 0);
+  }, 0);
+  const europe = comp('europa');
+  europe.shortDetail = 'Fase de liga · ' + points + ' pontos em ' + finished.length + ' jogos';
+  europe.statusTitle = 'Fase de liga em curso';
+  europe.statusText = 'O Benfica tem ' + points + ' pontos nos ' + finished.length +
+    ' jogos concluídos da fase de liga. Consulta o calendário para ver resultados e próximos adversários.';
+}
+
 function renderCompetitionCards() {
+  updateEuropaState();
   $('#competitionGrid').innerHTML = competitionData.map(c => `
     <button class="competition-card ${c.tone}" type="button" data-open-comp="${c.id}">
       <div class="competition-card-top">
@@ -548,7 +566,7 @@ function renderStatus(c) {
   const intro = `
     <article class="status-panel ${c.tone}">
       <div>
-        <span class="panel-kicker">${c.id === 'liga' && leagueTableUpdatedAt ? 'Classificação recebida online' : c.id === 'taca-portugal' && matches.some(m => m.competition === c.id && m.source === 'ESPN') ? 'Estado recebido da ESPN' : 'Estado de base · ' + DATA_DATE}</span>
+        <span class="panel-kicker">${c.id === 'liga' && leagueTableUpdatedAt ? 'Classificação recebida online' : ['taca-portugal', 'europa'].includes(c.id) && matches.some(m => m.competition === c.id && m.source === 'ESPN') ? 'Estado recebido da ESPN' : 'Estado de base · ' + DATA_DATE}</span>
         <h2>${escapeHtml(c.statusTitle)}</h2>
         <p>${escapeHtml(c.statusText)}</p>
       </div>
