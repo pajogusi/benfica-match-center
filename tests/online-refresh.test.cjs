@@ -178,7 +178,7 @@ test('actual ESPN responses cover 34 league fixtures, Europe and the full table 
   assert.equal(h.run('leagueTable.length'), 18);
   assert.equal(h.run('leagueTableSource'), 'ESPN');
   assert.equal(h.node('dataStatus').dataset.onlineMode, 'partial');
-  assert.match(h.node('dataCoverage').textContent, /Taça de Portugal: consulta indisponível/);
+  assert.match(h.node('dataCoverage').textContent, /Taça de Portugal temporariamente indisponível/);
   assert.match(h.run("comp('liga').shortDetail"), /7 jogos/);
   assert.equal(h.run("matches.find(m => m.competition === 'liga' && m.home === 'FC Porto').hs"), 3);
   assert.equal(h.run("matches.find(m => m.competition === 'liga' && m.home === 'FC Porto').as"), 1);

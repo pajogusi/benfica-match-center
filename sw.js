@@ -1,6 +1,6 @@
 const CACHE_PREFIX = 'benfica-match-center-';
-const CACHE = CACHE_PREFIX + 'v30-online-ready';
-const ASSETS = ['./', './index.html', './benfica.html', './styles.css?v=30-online-ready', './app.js?v=30-online-ready', './manifest.webmanifest', './icons/pjcorelabs.png', './icons/benfica-crest.svg'];
+const CACHE = CACHE_PREFIX + 'v31-layout-fix';
+const ASSETS = ['./', './index.html', './benfica.html', './styles.css?v=31-layout-fix', './app.js?v=31-layout-fix', './manifest.webmanifest', './icons/pjcorelabs.png', './icons/benfica-crest.svg'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });

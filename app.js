@@ -1245,8 +1245,14 @@ async function performOnlineRefresh() {
     setOnlineStatus('ESPN · ' + (fullCoverage ? 'dados recebidos' : 'atualização parcial') + ' · ' + clock,
       fullCoverage ? 'updated' : 'partial', details.join(' '));
     const note = document.getElementById('dataCoverage');
-    if (note) note.textContent = details.join(' ') +
-      ' Taça de Portugal: consulta gratuita ativa; o adversário depende da publicação do sorteio. Estados das outras competições continuam a ser dados de base. Horas só aparecem quando confirmadas pela fonte. Consulta a cada 5 minutos; não é transmissão em direto.';
+    if (note) {
+      const warnings = [];
+      if (useful < 3) warnings.push('Alguns dados não puderam ser atualizados.');
+      if (!cupChecked) warnings.push('Taça de Portugal temporariamente indisponível.');
+      if (!official.length) warnings.push('Calendário da Taça da Liga por confirmar.');
+      note.textContent = (warnings.length ? warnings.join(' ') : 'Dados atualizados.') +
+        ' Atualização automática a cada 5 minutos.';
+    }
   } catch (error) {
     setOnlineStatus('Atualização falhou · dados anteriores', 'error');
     console.warn('ESPN: atualização falhou', error);
