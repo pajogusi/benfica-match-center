@@ -302,7 +302,7 @@ function resultLabel(r) { return r === 'W' ? 'Vitória' : r === 'L' ? 'Derrota' 
 
 function upcomingMatches() {
   const now = new Date();
-  return matches.filter(m => m.status !== 'FT' && m.date && parseDate(m) > new Date(now.getTime() - 4*3600000)).sort((a,b)=>parseDate(a)-parseDate(b));
+  return matches.filter(m => !['FT','POSTPONED'].includes(m.status) && m.date && parseDate(m) > new Date(now.getTime() - 4*3600000)).sort((a,b)=>parseDate(a)-parseDate(b));
 }
 
 function tvChannel(m) {
@@ -357,7 +357,7 @@ function countdown(m) {
 
   const diffMs = dt.getTime() - Date.now();
   if (m.status === 'LIVE') return m.livePhase || 'Jogo em curso';
-  if (diffMs <= 0) return 'Jogo em curso';
+  if (diffMs <= 0) return 'A aguardar confirmação do estado';
 
   const totalSeconds = Math.floor(diffMs / 1000);
   const days = Math.floor(totalSeconds / 86400);
@@ -547,7 +547,7 @@ function renderStatus(c) {
   const intro = `
     <article class="status-panel ${c.tone}">
       <div>
-        <span class="panel-kicker">Estado atual</span>
+        <span class="panel-kicker">${c.id === 'liga' && leagueTableUpdatedAt ? 'Classificação recebida online' : 'Estado de base · ' + DATA_DATE}</span>
         <h2>${escapeHtml(c.statusTitle)}</h2>
         <p>${escapeHtml(c.statusText)}</p>
       </div>
@@ -567,7 +567,7 @@ function renderStatus(c) {
 
 function renderLeagueTable() {
   return `
-    <div class="section-head"><div><h2>Classificação da Liga</h2><p>Snapshot após a 2.ª jornada completa. Dados verificados em 18/08/2026.</p></div></div>
+    <div class="section-head"><div><h2>Classificação da Liga</h2><p>${leagueTableUpdatedAt ? 'Tabela recebida do TheSportsDB · ' + escapeHtml(new Intl.DateTimeFormat('pt-PT', {timeZone:DISPLAY_TIME_ZONE, dateStyle:'short', timeStyle:'short'}).format(new Date(leagueTableUpdatedAt))) : 'Tabela de base de 18/08/2026 · não atualizada online.'}</p></div></div>
     <div class="table-wrap">
       <table class="standings-table">
         <thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead>
@@ -710,8 +710,13 @@ const SPORTSDB_TEAM_ID = '134108';
 const SPORTSDB_LEAGUE_ID = '4344';
 const SPORTSDB_SEASON = '2026-2027';
 const SPORTSDB_BASE = 'https://www.thesportsdb.com/api/v1/json/123';
-const ONLINE_CACHE_KEY = 'benfica-match-center-online-v1';
-const ONLINE_TABLE_CACHE_KEY = 'benfica-match-center-table-v1';
+const ONLINE_CACHE_KEY = `benfica-match-center-data-v2-${SPORTSDB_SEASON}`;
+const ONLINE_REFRESH_MS = 5 * 60 * 1000;
+const ONLINE_CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
+let onlineRefreshPromise = null;
+let lastOnlineAttempt = 0;
+let leagueTableUpdatedAt = null;
+let onlineSnapshot = {season: SPORTSDB_SEASON, events: [], tableRows: []};
 
 function onlineNormalize(value='') {
   return String(value)
@@ -785,6 +790,9 @@ function sportsDbCompetition(event) {
 
 function sportsDbEventToMatch(event) {
   if (!event?.dateEvent || !event?.strHomeTeam || !event?.strAwayTeam) return null;
+  if (event.strSeason && event.strSeason !== SPORTSDB_SEASON) return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(event.dateEvent)) return null;
+  if (!Number.isFinite(new Date(`${event.dateEvent}T12:00:00Z`).getTime())) return null;
 
   const home = canonicalTeamName(event.strHomeTeam);
   const away = canonicalTeamName(event.strAwayTeam);
@@ -795,12 +803,12 @@ function sportsDbEventToMatch(event) {
 
   const onlineStatus = onlineNormalize(event.strStatus || '');
   const finished = ['ft', 'match finished', 'finished', 'aet', 'pen'].includes(onlineStatus);
-
-  const rawTime = event.strTimeLocal || event.strTime || '';
-  const time = /^\d{2}:\d{2}/.test(rawTime) ? rawTime.slice(0,5) : null;
+  const homeScore = validScore(event.intHomeScore);
+  const awayScore = validScore(event.intAwayScore);
+  if (finished && (homeScore === null || awayScore === null)) return null;
 
   let kickoffUtc = null;
-  if (event.strTimestamp) {
+  if (event.strTimestamp && /(?:Z|[+-]\d{2}:?\d{2})$/.test(event.strTimestamp)) {
     const ts = new Date(event.strTimestamp);
     if (!Number.isNaN(ts.getTime())) kickoffUtc = ts.toISOString();
   }
@@ -810,24 +818,33 @@ function sportsDbEventToMatch(event) {
     competition,
     round: event.intRound ? `Jornada ${event.intRound}` : (event.strGroup || 'Jogo'),
     date: event.dateEvent,
-    time,
+    time: null,
     kickoffUtc,
     home,
     away,
-    hs: finished ? Number(event.intHomeScore) : undefined,
-    as: finished ? Number(event.intAwayScore) : undefined,
-    status: finished ? 'FT' : 'NS',
+    hs: finished ? homeScore : undefined,
+    as: finished ? awayScore : undefined,
+    status: finished ? 'FT' : /postpon|cancel/.test(onlineStatus) ? 'POSTPONED' : 'NS',
     venue: event.strVenue || null,
     sourceOnline: true
   };
 }
 
+function validScore(value) {
+  if (value === null || value === undefined || String(value).trim() === '') return null;
+  const score = Number(value);
+  return Number.isInteger(score) && score >= 0 ? score : null;
+}
+
 function sameFixture(a, b) {
   if (!a || !b) return false;
+  if (a.competition !== b.competition) return false;
   const sameTeams = a.home === b.home && a.away === b.away;
   if (!sameTeams) return false;
+  if (a.id && b.id && a.id === b.id) return true;
+  if (a.competition === 'liga' && a.round === b.round) return true;
   if (a.date && b.date && a.date === b.date) return true;
-  if (!a.date || !b.date) return true;
+  if (!a.date || !b.date) return a.round === b.round;
 
   const ad = parseDate(a);
   const bd = parseDate(b);
@@ -839,15 +856,29 @@ function mergeOnlineMatches(incoming=[]) {
   let changed = false;
 
   for (const fresh of incoming) {
-    const current = matches.find(m => sameFixture(m, fresh));
+    const candidates = matches.filter(m => sameFixture(m, fresh));
+    const current = candidates.length === 1 ? candidates[0] : null;
 
     if (current) {
       const before = JSON.stringify(current);
 
-      if (fresh.date && !current.kickoffLocked) current.date = fresh.date;
-      if (fresh.time && !current.kickoffLocked) current.time = fresh.time;
-      if (fresh.kickoffUtc && !current.kickoffLocked) current.kickoffUtc = fresh.kickoffUtc;
+      if (fresh.kickoffUtc) {
+        current.date = fresh.date;
+        current.kickoffUtc = fresh.kickoffUtc;
+        current.time = null;
+        current.kickoffLocked = false;
+      } else if (fresh.date && fresh.date !== current.date) {
+        current.date = fresh.date;
+        current.time = null;
+        delete current.kickoffUtc;
+        current.kickoffLocked = false;
+      }
       if (fresh.venue) current.venue = fresh.venue;
+      current.sourceOnline = true;
+      if (fresh.id) current.id = fresh.id;
+
+      if (fresh.status === 'POSTPONED' && current.status !== 'FT') current.status = 'POSTPONED';
+      if (fresh.status === 'NS' && current.status === 'POSTPONED') current.status = 'NS';
 
       if (fresh.status === 'FT') {
         current.status = 'FT';
@@ -877,10 +908,15 @@ function tableNumber(row, ...keys) {
 }
 
 function applyOnlineLeagueTable(rows) {
-  if (!Array.isArray(rows) || rows.length < 10) return false;
+  // A partial table must never replace the complete local standings.
+  if (!Array.isArray(rows) || rows.length !== 18) return false;
+  if (rows.some(row => row.strSeason && row.strSeason !== SPORTSDB_SEASON)) return false;
+  const numericFields = ['intPlayed', 'intWin', 'intDraw', 'intLoss', 'intGoalsFor', 'intGoalsAgainst', 'intPoints'];
+  if (rows.some(row => numericFields.some(key => validScore(row[key]) === null))) return false;
+  if (rows.some(row => Number(row.intPlayed) !== Number(row.intWin) + Number(row.intDraw) + Number(row.intLoss))) return false;
 
   const mapped = rows.map(row => {
-    const team = canonicalTeamName(row.strTeam || row.name || row.team || '');
+    const team = String(canonicalTeamName(row.strTeam || row.name || row.team || '')).trim();
     if (!team) return null;
 
     return [
@@ -895,118 +931,158 @@ function applyOnlineLeagueTable(rows) {
     ];
   }).filter(Boolean);
 
-  if (!mapped.some(r => r[0] === BENFICA)) return false;
+  if (mapped.length !== 18 || !mapped.some(r => r[0] === BENFICA)) return false;
+  if (new Set(mapped.map(row => row[0])).size !== 18) return false;
 
-  mapped.sort((a,b) => {
-    if (b[7] !== a[7]) return b[7] - a[7];
-    const gdA = a[5] - a[6];
-    const gdB = b[5] - b[6];
-    if (gdB !== gdA) return gdB - gdA;
-    return b[5] - a[5];
-  });
+  const ranks = rows.map(row => Number(row.intRank));
+  if (ranks.some(rank => !Number.isInteger(rank) || rank < 1 || rank > 18) || new Set(ranks).size !== 18) return false;
+  // Preserve the provider's order, including its league tie-break rules.
+  const ranked = mapped.map((row, index) => ({row, rank: ranks[index]}));
+  ranked.sort((a,b) => a.rank - b.rank);
 
-  leagueTable.splice(0, leagueTable.length, ...mapped);
+  leagueTable.splice(0, leagueTable.length, ...ranked.map(item => item.row));
+  const benfica = leagueTable.find(row => row[0] === BENFICA);
+  const liga = comp('liga');
+  liga.shortDetail = `${benfica[7]} pontos em ${benfica[1]} jogos · 34 jornadas`;
+  liga.statusText = `O Benfica soma ${benfica[7]} pontos em ${benfica[1]} jogos: ${benfica[2]} vitórias, ${benfica[3]} empates e ${benfica[4]} derrotas. Classificação recebida do TheSportsDB.`;
   return true;
 }
 
-function saveOnlineCache(events, tableRows) {
-  try {
-    if (events?.length) {
-      localStorage.setItem(ONLINE_CACHE_KEY, JSON.stringify(events));
-    }
-    if (tableRows?.length) {
-      localStorage.setItem(ONLINE_TABLE_CACHE_KEY, JSON.stringify(tableRows));
-    }
-  } catch {}
+function saveOnlineCache(events, tableRows, receivedAt = Date.now()) {
+  if (events?.length) {
+    const byId = new Map((onlineSnapshot.events || []).map(event => [event.id, event]));
+    events.forEach(event => byId.set(event.id, event));
+    onlineSnapshot.events = Array.from(byId.values());
+    onlineSnapshot.eventsUpdatedAt = receivedAt;
+  }
+  if (tableRows?.length) {
+    onlineSnapshot.tableRows = tableRows;
+    onlineSnapshot.tableUpdatedAt = receivedAt;
+  }
+  try { localStorage.setItem(ONLINE_CACHE_KEY, JSON.stringify(onlineSnapshot)); } catch {}
+}
+
+function freshCacheStamp(value) {
+  return Number.isFinite(value) && value <= Date.now() && Date.now() - value <= ONLINE_CACHE_MAX_AGE;
 }
 
 function applyOnlineCache() {
   try {
-    const events = JSON.parse(localStorage.getItem(ONLINE_CACHE_KEY) || '[]');
-    const tableRows = JSON.parse(localStorage.getItem(ONLINE_TABLE_CACHE_KEY) || '[]');
-
-    if (Array.isArray(events) && events.length) {
-      mergeOnlineMatches(events);
+    const cache = JSON.parse(localStorage.getItem(ONLINE_CACHE_KEY) || 'null');
+    if (!cache || cache.season !== SPORTSDB_SEASON) return;
+    let used = false;
+    if (freshCacheStamp(cache.eventsUpdatedAt) && Array.isArray(cache.events)) {
+      const events = cache.events.filter(event => event && event.sourceOnline &&
+        comp(event.competition) && [event.home, event.away].includes(BENFICA) &&
+        ['NS','FT','POSTPONED'].includes(event.status) &&
+        (event.status !== 'FT' || (validScore(event.hs) !== null && validScore(event.as) !== null)));
+      if (events.length) {
+        mergeOnlineMatches(events);
+        onlineSnapshot.events = events;
+        onlineSnapshot.eventsUpdatedAt = cache.eventsUpdatedAt;
+        used = true;
+      }
     }
-    if (Array.isArray(tableRows) && tableRows.length) {
-      applyOnlineLeagueTable(tableRows);
+    if (freshCacheStamp(cache.tableUpdatedAt) && applyOnlineLeagueTable(cache.tableRows)) {
+      leagueTableUpdatedAt = cache.tableUpdatedAt;
+      onlineSnapshot.tableRows = cache.tableRows;
+      onlineSnapshot.tableUpdatedAt = cache.tableUpdatedAt;
+      used = true;
     }
+    if (used) setOnlineStatus('Dados guardados · a confirmar online', 'cached');
   } catch {}
 }
 
-function setOnlineStatus(text, mode='') {
+function setOnlineStatus(text, mode='', detail='') {
   const el = document.getElementById('dataStatus');
   if (!el) return;
   el.textContent = text;
   el.dataset.onlineMode = mode;
+  el.title = detail;
 }
 
 async function fetchJsonSafe(url) {
-  const response = await fetch(url, {
-    cache: 'no-store',
-    headers: { 'Accept': 'application/json' }
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return response.json();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  try {
+    const response = await fetch(url, {
+      cache: 'no-store', signal: controller.signal,
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const data = await response.json();
+    if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Resposta inválida');
+    return data;
+  } finally { clearTimeout(timeout); }
 }
 
-async function refreshOnlineData() {
-  setOnlineStatus('A atualizar…', 'loading');
+function refreshOnlineData() {
+  if (onlineRefreshPromise) return onlineRefreshPromise;
+  if (lastOnlineAttempt && Date.now() - lastOnlineAttempt < 30000) return Promise.resolve();
+  lastOnlineAttempt = Date.now();
+  onlineRefreshPromise = performOnlineRefresh().finally(() => { onlineRefreshPromise = null; });
+  return onlineRefreshPromise;
+}
 
+async function performOnlineRefresh() {
+  const button = document.getElementById('refreshDataButton');
+  if (button) button.disabled = true;
+  setOnlineStatus('A consultar a fonte…', 'loading');
   try {
-    const [lastData, nextData, tableData] = await Promise.allSettled([
-      fetchJsonSafe(`${SPORTSDB_BASE}/eventslast.php?id=${SPORTSDB_TEAM_ID}`),
-      fetchJsonSafe(`${SPORTSDB_BASE}/eventsnext.php?id=${SPORTSDB_TEAM_ID}`),
-      fetchJsonSafe(`${SPORTSDB_BASE}/lookuptable.php?l=${SPORTSDB_LEAGUE_ID}&s=${SPORTSDB_SEASON}`)
+    const results = await Promise.allSettled([
+      fetchJsonSafe(SPORTSDB_BASE + '/eventslast.php?id=' + SPORTSDB_TEAM_ID),
+      fetchJsonSafe(SPORTSDB_BASE + '/eventsnext.php?id=' + SPORTSDB_TEAM_ID),
+      fetchJsonSafe(SPORTSDB_BASE + '/lookuptable.php?l=' + SPORTSDB_LEAGUE_ID + '&s=' + SPORTSDB_SEASON)
     ]);
-
-    const rawEvents = [];
-
-    if (lastData.status === 'fulfilled') {
-      rawEvents.push(...(lastData.value.results || lastData.value.events || []));
+    const labels = ['Resultados', 'Próximos jogos'];
+    const details = [];
+    const incoming = [];
+    let useful = 0;
+    for (let i = 0; i < 2; i++) {
+      const result = results[i];
+      const rows = result.status === 'fulfilled' ? (result.value.results || result.value.events) : null;
+      const events = Array.isArray(rows) ? rows.map(sportsDbEventToMatch).filter(Boolean) : [];
+      if (events.length) {
+        useful++;
+        incoming.push(...events);
+        details.push(labels[i] + ': ' + events.length + ' jogo(s) recebido(s).');
+      } else {
+        details.push(labels[i] + ': ' + (result.status === 'rejected' ? 'consulta falhou' : 'sem dados válidos desta época') + '.');
+      }
     }
-    if (nextData.status === 'fulfilled') {
-      rawEvents.push(...(nextData.value.events || nextData.value.results || []));
+    const changedMatches = mergeOnlineMatches(incoming);
+    const tableResult = results[2];
+    const rows = tableResult.status === 'fulfilled' ? (tableResult.value.table || tableResult.value.tables) : null;
+    const acceptedTable = applyOnlineLeagueTable(rows);
+    const stamp = Date.now();
+    if (acceptedTable) {
+      useful++;
+      leagueTableUpdatedAt = stamp;
+      details.push('Classificação: tabela completa recebida.');
+    } else {
+      details.push('Classificação: indisponível, incompleta ou inválida; tabela anterior preservada.');
     }
-
-    const onlineMatches = rawEvents
-      .map(sportsDbEventToMatch)
-      .filter(Boolean);
-
-    const changedMatches = mergeOnlineMatches(onlineMatches);
-
-    let tableRows = [];
-    let changedTable = false;
-    if (tableData.status === 'fulfilled') {
-      tableRows = tableData.value.table || tableData.value.tables || [];
-      changedTable = applyOnlineLeagueTable(tableRows);
-    }
-
-    saveOnlineCache(onlineMatches, tableRows);
-
-    if (changedMatches || changedTable) {
+    saveOnlineCache(incoming, acceptedTable ? rows : [], stamp);
+    if (changedMatches || acceptedTable) {
       renderHero();
       renderCompetitionCards();
-      if (currentCompetition) renderDetail();
+      if (currentCompetition) openCompetition(currentCompetition, currentDetail, false);
     }
-
-    const stamp = new Intl.DateTimeFormat('pt-PT', {
-      timeZone: DISPLAY_TIME_ZONE,
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    }).format(new Date());
-
-    if (onlineMatches.length || changedTable) {
-      setOnlineStatus(`Atualizado online · ${stamp}`, 'ok');
-    } else {
-      setOnlineStatus(`Verificado online · ${stamp}`, 'ok');
-    }
+    const clock = new Intl.DateTimeFormat('pt-PT', {
+      timeZone: DISPLAY_TIME_ZONE, day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'
+    }).format(new Date(stamp));
+    const message = useful ? 'Dados parciais recebidos · ' + clock : 'Sem novos dados válidos · dados anteriores';
+    const note = document.getElementById('dataCoverage');
+    if (note) note.textContent = details.join(' ') + ' A fonte gratuita pode omitir jogos fora e não garante resultados em direto. Restantes estados das competições: dados de base de ' + DATA_DATE + '.';
+    setOnlineStatus(message, useful ? 'partial' : 'error', details.join(' '));
   } catch (err) {
-    setOnlineStatus('Dados locais · online indisponível', 'error');
+    setOnlineStatus('Atualização falhou · dados anteriores', 'error');
     console.warn('Benfica Match Center: atualização online falhou', err);
+  } finally {
+    if (button) button.disabled = false;
   }
 }
+
 
 function routeFromHash() {
   const m = location.hash.match(/^#competicao\/([^/]+)(?:\/(status|calendar))?$/);
@@ -1036,6 +1112,12 @@ renderHero();
 renderCompetitionCards();
 routeFromHash();
 refreshOnlineData();
+document.getElementById('refreshDataButton')?.addEventListener('click', refreshOnlineData);
+window.addEventListener('online', refreshOnlineData);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && Date.now() - lastOnlineAttempt >= ONLINE_REFRESH_MS) refreshOnlineData();
+});
+setInterval(() => { if (!document.hidden) refreshOnlineData(); }, ONLINE_REFRESH_MS);
 setInterval(updateLiveCountdown, 1000);
 setInterval(renderHero, 60000);
 
