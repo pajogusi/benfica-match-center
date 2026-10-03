@@ -177,7 +177,8 @@ test('actual ESPN responses cover 34 league fixtures, Europe and the full table 
   assert.equal(h.run("matches.filter(m => m.competition === 'europa' && m.source === 'ESPN').length"), 14);
   assert.equal(h.run('leagueTable.length'), 18);
   assert.equal(h.run('leagueTableSource'), 'ESPN');
-  assert.equal(h.node('dataStatus').dataset.onlineMode, 'updated');
+  assert.equal(h.node('dataStatus').dataset.onlineMode, 'partial');
+  assert.match(h.node('dataCoverage').textContent, /Taça de Portugal: consulta indisponível/);
   assert.match(h.run("comp('liga').shortDetail"), /7 jogos/);
   assert.equal(h.run("matches.find(m => m.competition === 'liga' && m.home === 'FC Porto').hs"), 3);
   assert.equal(h.run("matches.find(m => m.competition === 'liga' && m.home === 'FC Porto').as"), 1);
@@ -242,4 +243,67 @@ test('unconfirmed live evidence expires after two polling intervals', () => {
   const h=harness();
   h.run("matches.push({id:'stale-live',competition:'liga',home:'SL Benfica',away:'Test',status:'LIVE',hs:1,as:0,observedAt:Date.now()-11*60000}); expireLiveEvidence()");
   assert.equal(h.run("matches.find(m => m.id === 'stale-live').status"), 'NS');
+});
+
+// Real previous-season schema; dates/season changed only in the synthetic cases
+// below because no 2026/27 Benfica cup fixture has yet been published.
+function cupEvent(stage='4th Round') {
+  const event=structuredClone(realEspn('cup-2025').events.find(e => e.seasonType.name === stage));
+  event.season.year=2026;
+  event.date=stage==='4th Round' ? '2026-11-21T20:30Z' : '2027-01-14T20:45Z';
+  event.competitions[0].date=event.date;
+  return event;
+}
+test('real prior-season Benfica cup matches cannot leak into the current season', () => {
+  const h=harness();
+  for(const event of realEspn('cup-2025').events){h.context.event=event;assert.equal(h.run('espnEventToMatch(event)'),null);}
+});
+test('empty cup response is valid only for the correct Benfica team and requested season', () => {
+  const h=harness();
+  h.context.data={team:{id:'1929'},season:{year:2026},events:[]};
+  assert.equal(h.run('validCupSchedule(data)'),true);
+  h.context.data.requestedSeason={year:2025};
+  assert.equal(h.run('validCupSchedule(data)'),false);
+  delete h.context.data.requestedSeason;h.context.data.team.id='999';
+  assert.equal(h.run('validCupSchedule(data)'),false);
+});
+test('published cup fixture replaces the draw placeholder even when Benfica plays away', () => {
+  const h=harness(); const event=cupEvent();
+  event.competitions[0].status.type={completed:false,state:'pre',name:'STATUS_SCHEDULED'};
+  h.context.event=event;
+  h.run('mergeOnlineMatches([espnEventToMatch(event)]); updatePortugalCupState()');
+  assert.equal(h.run("matches.filter(m=>m.competition==='taca-portugal').length"),1);
+  assert.equal(h.run("matches.find(m=>m.competition==='taca-portugal').home"),'Atlético CP');
+  assert.equal(h.run("matches.find(m=>m.competition==='taca-portugal').round"),'4.ª eliminatória');
+  assert.match(h.run("comp('taca-portugal').statusText"),/Atlético CP/);
+  assert.equal(h.run("matches.some(m=>m.away==='Adversário por sortear')"),false);
+});
+test('cup results update qualification and a confirmed defeat updates elimination', () => {
+  const h=harness();h.context.event=cupEvent();
+  h.run('mergeOnlineMatches([espnEventToMatch(event)]); updatePortugalCupState()');
+  assert.equal(h.run("comp('taca-portugal').status"),'Qualificado');
+  h.context.event=cupEvent('Quarterfinals');
+  h.run('mergeOnlineMatches([espnEventToMatch(event)]); updatePortugalCupState()');
+  assert.equal(h.run("comp('taca-portugal').status"),'Eliminado');
+  assert.match(h.run("comp('taca-portugal').statusTitle"),/Quartos de final/);
+});
+test('a drawn cup result needs an explicit winner, including a penalty decision', () => {
+  const h=harness();const event=cupEvent();
+  event.competitions[0].competitors.forEach(t=>{t.winner=false;t.score.value=1;});
+  h.context.event=event;
+  h.run('mergeOnlineMatches([espnEventToMatch(event)]); updatePortugalCupState()');
+  assert.equal(h.run("comp('taca-portugal').status"),'A confirmar');
+  event.competitions[0].competitors.find(t=>t.team.id==='1929').winner=true;
+  h.run('mergeOnlineMatches([espnEventToMatch(event)]); updatePortugalCupState()');
+  assert.equal(h.run("comp('taca-portugal').status"),'Qualificado');
+});
+test('cup-only data still updates when the general schedule and standings fail', async () => {
+  const event=cupEvent();
+  const h=harness(async url=>{
+    if(url.includes('/por.taca.portugal/'))return response({team:{id:'1929'},season:{year:2026},events:[event]});
+    throw Error('unavailable');
+  },true);
+  await h.run('refreshOnlineData()');
+  assert.equal(h.run("comp('taca-portugal').status"),'Qualificado');
+  assert.equal(h.node('dataStatus').dataset.onlineMode,'partial');
 });
