@@ -731,3 +731,25 @@ footer strong { color: #ddd; margin-right: 7px; }
   letter-spacing: .05em;
   text-transform: uppercase;
 }
+
+
+/* Independent developer credit, kept separate from club branding. */
+.pjcore-credit { display:flex; align-items:center; gap:8px; flex-shrink:0; align-self:flex-end; margin-left:auto; color:#b8bec8; text-decoration:none; }
+.pjcore-credit img { width:40px; height:40px; object-fit:contain; border-radius:8px; }
+.pjcore-credit span { display:flex; flex-direction:column; gap:2px; }
+.pjcore-credit small { font-size:10px; }
+footer .pjcore-credit strong { margin:0; font-size:11px; font-weight:600; color:#c6ccd5; }
+.pjcore-credit:hover strong { color:#fff; }
+.pjcore-credit:focus-visible { outline:2px solid #c6ccd5; outline-offset:5px; border-radius:4px; }
+@media(max-width:700px) { .pjcore-credit { align-self:flex-end; } }
+
+footer { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; }
+footer > div:first-child { grid-column:1; }
+footer .goatcounter-box { grid-column:2; justify-self:end; margin-left:0; }
+footer .footer-links { grid-column:1; }
+footer .pjcore-credit { grid-column:2; justify-self:end; margin-left:0; }
+@media(max-width:700px) {
+  footer { grid-template-columns:minmax(0,1fr); }
+  footer .goatcounter-box, footer .pjcore-credit, footer .footer-links { grid-column:1; }
+  footer .goatcounter-box { justify-self:start; }
+}

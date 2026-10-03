@@ -14,6 +14,56 @@ Web app não oficial para acompanhar a equipa principal de futebol do SL Benfica
 
 Os dados-base foram verificados em 22/08/2026 em fontes oficiais do SL Benfica, Liga Portugal, FPF e UEFA. Horários e sorteios podem sofrer alterações.
 
+## Atualização dos dados
+
+A página inicial está preparada para reabrir a aplicação. `index.html` e
+`benfica.html` apresentam a mesma interface. As alterações permanecem no ramo de
+preparação até à integração no ramo principal; a versão pública continua em manutenção.
+
+- Consulta ao abrir, botão “Atualizar dados”, nova consulta a cada cinco minutos enquanto a página está visível e ao regressar após esse intervalo.
+- Pedidos com limite de dez segundos, sem consultas concorrentes e com intervalo mínimo de trinta segundos.
+- Falhas, respostas vazias e dados parciais são identificados; nunca são apresentados como atualização completa.
+- Resultados sem golos válidos e dados de outras épocas são rejeitados.
+- Classificações incompletas não substituem a tabela anterior. Uma tabela completa atualiza também o texto do cartão da Liga e preserva a ordem fornecida pela fonte.
+- Cache por época com validade de 24 horas. Guardar dados não os transforma em dados em direto.
+- O service worker só trata recursos locais e preserva caches de outras aplicações.
+
+### Fontes gratuitas
+
+- ESPN: calendário e resultados do Benfica em todas as competições que o fornecedor cobre, e classificação da Liga. A consulta real em 03/10/2026 devolveu os 34 jogos da Liga, 14 jogos europeus (incluindo pré-eliminatórias) e os 18 clubes da classificação. Os endpoints públicos responderam com CORS `*`, sem conta ou chave. Não constituem uma API contratada: podem mudar ou falhar.
+- [Liga Portugal](https://www.ligaportugal.pt/calendars-ics/sl_benfica.ics): calendário oficial ICS. Um coletor em Python, sem dependências, recolhe os jogos da Allianz Cup; GitHub Actions executa a cada seis horas e permite execução manual. Este agendamento só fica ativo depois de integrar a alteração no ramo principal. Num repositório público, este uso de Actions é gratuito.
+- O JSON oficial é consultado diretamente no ramo principal para não depender de um novo build de Pages após o commit automático. Há alternativa no ficheiro local. Dados com mais de 24 horas são rejeitados e o estado anterior é preservado.
+- TheSportsDB: alternativa se a ESPN não devolver dados utilizáveis; as limitações do plano gratuito são identificadas na aplicação.
+
+Cobertura ainda por validar: resultados da Taça da Liga e estados de qualificação das restantes competições. O calendário oficial não contém resultados: nunca se deduz um resultado a partir do horário. A recolha é periódica; não há garantia de resultados em direto nem disponibilidade contínua dos fornecedores.
+
+Horários provisórios da ESPN (`timeValid=false`) são apresentados como hora por confirmar. Datas e horários oficiais da Taça da Liga substituem os dados de base; Benfica–Gil Vicente foi corrigido de 27 para 29/10/2026, às 20h45 de Portugal.
+
+### Taça de Portugal
+
+A ESPN também fornece a Taça de Portugal, gratuitamente e com CORS `*`. Há consultas específicas aos resultados e próximos jogos do Benfica, independentes do calendário geral. Em 03/10/2026, a consulta da época atual devolveu legitimamente zero jogos publicados; a mesma fonte devolveu os quatro jogos do Benfica em 2025/26 e resultados da 2.ª eliminatória de 2026/27. A Liga Portugal confirmou a isenção do Benfica na 3.ª eliminatória. O cartão mantém o adversário por sortear, sem inventar um jogo.
+
+Quando a fonte publicar um jogo, a aplicação substitui o marcador de sorteio (incluindo jogos fora), apresenta a eliminatória correta, atualiza resultados e usa o vencedor explícito do fornecedor para indicar apuramento ou eliminação. Um empate sem vencedor, incluindo decisões por penáltis ainda incompletas, fica por confirmar. Jogos de épocas anteriores são rejeitados. As respostas reais de 2025/26 validam o esquema; testes sintéticos simulam jogos de 2026/27 ainda não publicados e estão identificados como tal.
+
+A consulta atual foi verificada por HTTP; a receção automática do futuro sorteio ainda não pode ser comprovada com um jogo real da época atual. Falhas da consulta da Taça são identificadas mesmo quando a Liga recebe dados.
+
+### Verificação
+
+```bash
+node --test tests/*.test.cjs
+python3 -m unittest discover -s tests -p '*_test.py'
+```
+
+Os testes incluem respostas reais reduzidas, recolhidas em 03/10/2026, além de falhas de rede, temporadas erradas, classificações incompletas, horários provisórios, cache e funcionamento offline. Consultas HTTP reais verificaram a cobertura e o cabeçalho CORS da ESPN; o fluxo no navegador continua por verificar antes da reabertura.
+
 ## Marcas e emblemas
 
 Projeto não oficial e sem afiliação com o SL Benfica, Liga Portugal, FPF ou UEFA. Os nomes, emblemas e logótipos pertencem aos respetivos titulares e são apresentados apenas para identificar clubes e competições.
+
+## Preparação da reabertura
+
+O crédito PJCore Labs usa o símbolo original do repositório da marca (`website/img/pjcorelabs-symbol-clean.png`), copiado sem alterações para `icons/pjcorelabs.png`. Aparece pequeno no canto inferior direito do rodapé e aponta para pjcorelabs.com. O aviso de projeto independente e não oficial permanece separado do emblema do clube.
+
+A página inicial volta a apresentar a aplicação; a versão do service worker e as referências aos recursos são atualizadas juntas. A recolha oficial inicia automaticamente na integração do workflow no ramo principal e prossegue a cada seis horas. O contador GoatCounter é preservado; indisponibilidade de rede ou bloqueio de privacidade é identificada sem atribuir uma causa não confirmada.
+
+Os testes automatizados passam e os recursos locais foram verificados. A confirmação visual no navegador está pendente: o navegador de teste recusou abrir o servidor local (`ERR_BLOCKED_BY_CLIENT`). A publicação e a execução do workflow no GitHub ainda não foram realizadas nesta preparação.

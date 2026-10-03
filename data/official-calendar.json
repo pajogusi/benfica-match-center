@@ -1,0 +1,22 @@
+{
+  "season": "2026-2027",
+  "fetchedAt": "2026-10-03T20:35:05.966489+00:00",
+  "sourceUrl": "https://www.ligaportugal.pt/calendars-ics/sl_benfica.ics",
+  "matches": [
+    {
+      "id": "liga-portugal-1/3",
+      "competition": "taca-liga",
+      "round": "Quartos de final",
+      "date": "2026-10-29",
+      "kickoffUtc": "2026-10-29T20:45:00Z",
+      "time": null,
+      "home": "SL Benfica",
+      "away": "Gil Vicente FC",
+      "venue": "Estádio SL Benfica",
+      "status": "NS",
+      "source": "Liga Portugal",
+      "sourceUrl": "https://www.ligaportugal.pt/match/20262027/allianzcup/1/3",
+      "sourceOnline": true
+    }
+  ]
+}

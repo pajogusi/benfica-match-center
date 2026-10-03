@@ -1,19 +1,37 @@
-const CACHE = 'benfica-match-center-v27-portugal-time';
-const ASSETS = ["./", "./index.html", "./benfica.html", "./styles.css?v=27-portugal-time", "./app.js?v=27-portugal-time", "./manifest.webmanifest", "./icons/benfica-crest.svg", "./icons/clubs/academico-de-viseu.svg", "./icons/clubs/agf-aarhus.svg", "./icons/clubs/alverca.svg", "./icons/clubs/arouca.svg", "./icons/clubs/casa-pia.svg", "./icons/clubs/estoril.svg", "./icons/clubs/estrela-amadora.svg", "./icons/clubs/famalicao.svg", "./icons/clubs/fc-porto.svg", "./icons/clubs/gil-vicente.svg", "./icons/clubs/heart-of-midlothian.svg", "./icons/clubs/maritimo.svg", "./icons/clubs/moreirense.svg", "./icons/clubs/nacional.svg", "./icons/clubs/rio-ave.svg", "./icons/clubs/santa-clara.svg", "./icons/clubs/sc-braga.svg", "./icons/clubs/sl-benfica.svg", "./icons/clubs/sporting-cp.svg", "./icons/clubs/st-gallen.svg", "./icons/clubs/vitoria-sc.svg", "./icons/competitions/liga-portugal.svg", "./icons/competitions/taca-portugal.svg", "./icons/competitions/taca-liga.png", "./icons/competitions/europa-league.svg", "./icons/competitions/champions-league.svg", "./icons/competitions/conference-league.svg", "./icons/competitions/supertaca-portugal.svg", "./icons/competitions/uefa-supercup.svg"];
+const CACHE_PREFIX = 'benfica-match-center-';
+const CACHE = CACHE_PREFIX + 'v30-online-ready';
+const ASSETS = ['./', './index.html', './benfica.html', './styles.css?v=30-online-ready', './app.js?v=30-online-ready', './manifest.webmanifest', './icons/pjcorelabs.png', './icons/benfica-crest.svg'];
 self.addEventListener('install', event => {
-  self.skipWaiting();
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', event => event.waitUntil(
   caches.keys()
-    .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    .then(keys => Promise.all(keys.filter(key => key.startsWith(CACHE_PREFIX) && key !== CACHE).map(key => caches.delete(key))))
     .then(() => self.clients.claim())
 ));
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-  event.respondWith(fetch(event.request, { cache: 'no-store' }).then(response => {
-    const copy = response.clone();
-    caches.open(CACHE).then(cache => cache.put(event.request, copy));
-    return response;
-  }).catch(() => caches.match(event.request).then(r => r || caches.match('./index.html'))));
+  const url = new URL(event.request.url);
+  // External APIs manage their own errors; never answer JSON requests with HTML.
+  if (url.origin !== self.location.origin) return;
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE);
+    try {
+      const response = await fetch(event.request, {cache: 'no-store'});
+      if (response.ok) {
+        try { await cache.put(event.request, response.clone()); } catch {}
+        return response;
+      }
+      return (await cache.match(event.request)) || response;
+    } catch {
+      const exact = await cache.match(event.request);
+      if (exact) return exact;
+      if (event.request.mode === 'navigate') {
+        const page = url.pathname.endsWith('/benfica.html') ? './benfica.html' : './index.html';
+        const offlinePage = await cache.match(page);
+        if (offlinePage) return offlinePage;
+      }
+      return Response.error();
+    }
+  })());
 });
