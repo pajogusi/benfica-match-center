@@ -27,27 +27,25 @@ A página inicial continua em manutenção. A aplicação preservada está em
 - Cache por época com validade de 24 horas. Guardar dados não os transforma em dados em direto.
 - O service worker só trata recursos locais e preserva caches de outras aplicações.
 
-### Limite da fonte atual
+### Fontes gratuitas
 
-O código usa a chave gratuita 123 do TheSportsDB. A
-[documentação do fornecedor](https://www.thesportsdb.com/documentation)
-limita os pedidos de próximo/último jogo a um jogo em casa e a consulta
-de classificação a cinco linhas. Esta fonte não garante calendário completo,
-jogos fora, classificação completa nem resultados em direto.
-Os estados das restantes competições continuam a ser dados de base, identificados
-como tal. A aplicação só deve sair da manutenção depois de validar uma fonte
-com cobertura suficiente, os dados reais da época e o fluxo no navegador.
+- ESPN: calendário e resultados do Benfica em todas as competições que o fornecedor cobre, e classificação da Liga. A consulta real em 03/10/2026 devolveu os 34 jogos da Liga, 14 jogos europeus (incluindo pré-eliminatórias) e os 18 clubes da classificação. Os endpoints públicos responderam com CORS `*`, sem conta ou chave. Não constituem uma API contratada: podem mudar ou falhar.
+- [Liga Portugal](https://www.ligaportugal.pt/calendars-ics/sl_benfica.ics): calendário oficial ICS. Um coletor em Python, sem dependências, recolhe os jogos da Allianz Cup; GitHub Actions executa a cada seis horas e permite execução manual. Este agendamento só fica ativo depois de integrar a alteração no ramo principal. Num repositório público, este uso de Actions é gratuito.
+- O JSON oficial é consultado diretamente no ramo principal para não depender de um novo build de Pages após o commit automático. Há alternativa no ficheiro local. Dados com mais de 24 horas são rejeitados e o estado anterior é preservado.
+- TheSportsDB: alternativa se a ESPN não devolver dados utilizáveis; as limitações do plano gratuito são identificadas na aplicação.
+
+Cobertura ainda por validar: Taça de Portugal, resultados da Taça da Liga e estados de qualificação/eliminatórias. O calendário oficial não contém resultados: nunca se deduz um resultado a partir do horário. A recolha é periódica; não há garantia de resultados em direto nem disponibilidade contínua dos fornecedores.
+
+Horários provisórios da ESPN (`timeValid=false`) são apresentados como hora por confirmar. Datas e horários oficiais da Taça da Liga substituem os dados de base; Benfica–Gil Vicente foi corrigido de 27 para 29/10/2026, às 20h45 de Portugal.
 
 ### Verificação
 
-Com Node.js instalado, executar:
-
 ```bash
 node --test tests/*.test.cjs
+python3 -m unittest discover -s tests -p '*_test.py'
 ```
 
-Os testes usam respostas simuladas: verificam o comportamento da aplicação,
-não a disponibilidade, CORS ou cobertura real do fornecedor.
+Os testes incluem respostas reais reduzidas, recolhidas em 03/10/2026, além de falhas de rede, temporadas erradas, classificações incompletas, horários provisórios, cache e funcionamento offline. Consultas HTTP reais verificaram a cobertura e o cabeçalho CORS da ESPN; o fluxo no navegador continua por verificar antes da reabertura.
 
 ## Marcas e emblemas
 
