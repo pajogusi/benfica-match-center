@@ -168,6 +168,51 @@ test('full application startup renders and schedules data refresh', async () => 
 });
 
 const realEspn = name => JSON.parse(readFileSync(path.join(__dirname, 'fixtures', 'espn-' + name + '.json'), 'utf8'));
+test('complete Europa table preserves source rank and highlights Benfica', () => {
+  const h = harness();
+  h.context.europaPayload = realEspn('europa-standings');
+  assert.equal(h.run('applyEuropaTable(europaPayload)'), true);
+  assert.equal(h.run('europaTable.length'), 36);
+  assert.equal(h.run("europaTable.find(row=>row.id === '1929').rank"), 7);
+  assert.match(h.run("comp('europa').shortDetail"), /7.º lugar · 3 pontos/);
+  const html = h.run('renderEuropaTable()');
+  assert.equal((html.match(/<tr class=/g) || []).length, 36);
+  assert.match(html, /benfica-row/);
+  assert.match(html, /1–8: oitavos/);
+});
+test('partial, wrong-season, duplicate and inconsistent Europa tables preserve valid data', () => {
+  const h = harness();
+  h.context.europaPayload = realEspn('europa-standings');
+  h.run('applyEuropaTable(europaPayload)');
+  for (const change of [
+    p=>p.children[0].standings.entries.pop(),
+    p=>p.children[0].standings.season=2025,
+    p=>p.children[0].standings.entries[1]=p.children[0].standings.entries[0],
+    p=>p.children[0].standings.entries[0].stats.find(s=>s.name === 'gamesPlayed').value=8,
+    p=>p.id='another-competition'
+  ]) {
+    const payload = realEspn('europa-standings'); change(payload);
+    h.context.badEuropa = payload;
+    assert.equal(h.run('applyEuropaTable(badEuropa)'), false);
+    assert.equal(h.run('europaTable.length'), 36);
+  }
+});
+test('Europa table restores from a fresh cache and expires after 24 hours', () => {
+  const h = harness();
+  h.context.europaPayload = realEspn('europa-standings');
+  h.run('applyEuropaTable(europaPayload); saveOnlineCache([], []); europaTable=[]; applyOnlineCache()');
+  assert.equal(h.run('europaTable.length'), 36);
+  h.run('europaTable=[]; onlineSnapshot.europaTableUpdatedAt=Date.now()-ONLINE_CACHE_MAX_AGE-1; saveOnlineCache([], []); applyOnlineCache()');
+  assert.equal(h.run('europaTable.length'), 0);
+});
+test('Europa network failure preserves the complete previous table and reports its age', async () => {
+  const h = harness(async ()=>{throw Error('offline');}, true);
+  h.context.europaPayload = realEspn('europa-standings');
+  h.run('applyEuropaTable(europaPayload)');
+  await h.run('refreshOnlineData()');
+  assert.equal(h.run('europaTable.length'),36);
+  assert.match(h.run('renderEuropaTable()'), /última consulta falhou/);
+});
 test('actual ESPN responses cover 34 league fixtures, Europe and the full table without duplicates', async () => {
   const h = harness(async url => response(realEspn(url.includes('standings') ? 'standings' : url.includes('fixture=true') ? 'fixtures' : 'results')), true);
   await h.run('refreshOnlineData()');

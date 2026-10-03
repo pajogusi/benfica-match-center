@@ -489,6 +489,16 @@ function updateLiveCountdown() {
 }
 
 function updateEuropaState() {
+  const tableRow = europaTable.find(row => row.id === '1929');
+  if (tableRow) {
+    const europe = comp('europa');
+    europe.shortDetail = tableRow.rank + '.º lugar · ' + tableRow.points + ' pontos';
+    europe.statusTitle = 'Fase de liga · ' + tableRow.rank + '.º lugar';
+    europe.statusText = 'O Benfica soma ' + tableRow.points + ' pontos em ' + tableRow.played +
+      (tableRow.played === 1 ? ' jogo.' : ' jogos.');
+    return;
+  }
+
   const games = matches.filter(m => m.competition === 'europa' && m.source === 'ESPN' &&
     /Fase de liga/.test(m.round || ''));
   if (!games.length) return;
@@ -573,7 +583,7 @@ function renderStatus(c) {
     </article>`;
 
   if (c.tableType === 'league') return intro + renderLeagueTable();
-  if (c.id === 'europa') return intro + renderEuropaFixturesTable();
+  if (c.id === 'europa') return intro + renderEuropaTable() + renderEuropaFixturesTable();
   if (c.tableType === 'knockout') {
     return intro + `
       <div class="section-head"><div><h2>Percurso / fase atual</h2><p>${c.id === 'europa' ? 'Na fase de liga, o Benfica disputa oito jogos: quatro em casa e quatro fora.' : 'Nesta fase a prova é a eliminar, por isso não existe tabela por pontos.'}</p></div></div>
@@ -735,11 +745,15 @@ const ONLINE_CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
 let onlineRefreshPromise = null;
 let lastOnlineAttempt = 0;
 let leagueTableUpdatedAt = null;
+let europaTable = [];
+let europaTableUpdatedAt = null;
+let europaTableLastCheckFailed = false;
 let leagueTableSource = 'TheSportsDB';
 const ESPN_SEASON = 2026;
 const OFFICIAL_CALENDAR = 'https://raw.githubusercontent.com/pajogusi/benfica-match-center/main/data/official-calendar.json';
 const ESPN_SCHEDULE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/1929/schedule?season=' + ESPN_SEASON;
 const ESPN_CUP_SCHEDULE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/por.taca.portugal/teams/1929/schedule?season=' + ESPN_SEASON;
+const ESPN_EUROPA_STANDINGS = 'https://site.api.espn.com/apis/v2/sports/soccer/uefa.europa/standings?season=' + ESPN_SEASON;
 const ESPN_STANDINGS = 'https://site.api.espn.com/apis/v2/sports/soccer/por.1/standings?season=' + ESPN_SEASON;
 let onlineSnapshot = {season: SPORTSDB_SEASON, events: [], tableRows: []};
 
@@ -1048,6 +1062,7 @@ function applyOnlineCache() {
       onlineSnapshot.tableUpdatedAt = cache.tableUpdatedAt;
       used = true;
     }
+    if (freshCacheStamp(cache.europaTableUpdatedAt) && applyEuropaTable(cache.europaStandings, cache.europaTableUpdatedAt)) used = true;
     if (used) setOnlineStatus('Dados guardados · a confirmar online', 'cached');
   } catch {}
 }
@@ -1189,6 +1204,50 @@ function espnEventToMatch(event) {
     sourceUrl:'https://www.espn.com/soccer/match/_/gameId/' + event.id, observedAt:Date.now()};
 }
 
+function europaStandingsRows(data) {
+  if (data?.id !== '2310') return [];
+  const group = data.children?.find(child => child.name === 'League Phase' &&
+    child.standings?.season === ESPN_SEASON && child.standings?.entries?.length === 36);
+  if (!group) return [];
+  const fields = {played:'gamesPlayed',wins:'wins',draws:'ties',losses:'losses',
+    goalsFor:'pointsFor',goalsAgainst:'pointsAgainst',points:'points',rank:'rank'};
+  const rows = group.standings.entries.map(entry => {
+    const stats = Object.fromEntries((entry.stats || []).map(stat => [stat.name,stat.value]));
+    const row = {id:String(entry.team?.id || ''),name:canonicalTeamName(entry.team?.displayName || '')};
+    for (const [key,stat] of Object.entries(fields)) row[key] = stats[stat];
+    return row;
+  });
+  if (rows.some(row => !row.id || !row.name || Object.keys(fields).some(key =>
+    !Number.isInteger(row[key]) || row[key] < 0) || row.rank < 1 || row.rank > 36 ||
+    row.played > 8 || row.played !== row.wins + row.draws + row.losses)) return [];
+  if (new Set(rows.map(row=>row.rank)).size !== 36 || new Set(rows.map(row=>row.id)).size !== 36 ||
+    new Set(rows.map(row=>row.name)).size !== 36 || !rows.some(row=>row.id === '1929' && row.name === BENFICA)) return [];
+  return rows.sort((a,b)=>a.rank-b.rank);
+}
+
+function applyEuropaTable(data, receivedAt=Date.now()) {
+  const rows = europaStandingsRows(data);
+  if (!rows.length) return false;
+  europaTable = rows;
+  europaTableUpdatedAt = receivedAt;
+  europaTableLastCheckFailed = false;
+  onlineSnapshot.europaStandings = data;
+  onlineSnapshot.europaTableUpdatedAt = receivedAt;
+  updateEuropaState();
+  return true;
+}
+
+function renderEuropaTable() {
+  if (!europaTable.length) return '<div class="empty-state"><strong>Classificação temporariamente indisponível.</strong><span>Tenta atualizar os dados.</span></div>';
+  const date = new Intl.DateTimeFormat('pt-PT',{timeZone:DISPLAY_TIME_ZONE,dateStyle:'short',timeStyle:'short'}).format(new Date(europaTableUpdatedAt));
+  return `<div class="section-head"><div><h2>Classificação da Liga Europa</h2><p>Atualizada em ${escapeHtml(date)}${europaTableLastCheckFailed ? ' · última consulta falhou; tabela anterior preservada' : ''}</p></div></div>
+    <p class="europa-table-legend"><span>1–8: oitavos</span><span>9–24: play-off</span><span>25–36: eliminação</span></p>
+    <div class="table-wrap"><table class="standings-table europa-standings">
+    <thead><tr><th>#</th><th>Equipa</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GM</th><th>GS</th><th>DG</th><th>Pts</th></tr></thead>
+    <tbody>${europaTable.map(row=>`<tr class="${row.id === '1929' ? 'benfica-row ' : ''}${row.rank === 8 || row.rank === 24 ? 'europa-zone-end' : ''}"><td><span class="europa-rank ${row.rank <= 8 ? 'direct' : row.rank <= 24 ? 'playoff' : 'out'}">${row.rank}</span></td><td>${escapeHtml(row.name)}</td><td>${row.played}</td><td>${row.wins}</td><td>${row.draws}</td><td>${row.losses}</td><td>${row.goalsFor}</td><td>${row.goalsAgainst}</td><td>${row.goalsFor-row.goalsAgainst}</td><td>${row.points}</td></tr>`).join('')}</tbody></table></div>
+    <p class="europa-table-source">Fonte: <a href="https://www.espn.com/soccer/table/_/league/uefa.europa" target="_blank" rel="noopener noreferrer">ESPN</a> · posições atuais, sujeitas aos resultados das próximas jornadas.</p>`;
+}
+
 function espnStandingsRows(data) {
   if (data?.season?.year !== ESPN_SEASON) return [];
   const group = data.children?.find(child => child.standings?.entries?.length === 18);
@@ -1212,7 +1271,8 @@ async function performOnlineRefresh() {
       fetchJsonSafe(ESPN_SCHEDULE + '&fixture=true'), fetchJsonSafe(ESPN_STANDINGS),
       fetchJsonSafe(OFFICIAL_CALENDAR).catch(() => fetchJsonSafe('data/official-calendar.json')),
       fetchJsonSafe(ESPN_CUP_SCHEDULE + '&fixture=false'),
-      fetchJsonSafe(ESPN_CUP_SCHEDULE + '&fixture=true')
+      fetchJsonSafe(ESPN_CUP_SCHEDULE + '&fixture=true'),
+      fetchJsonSafe(ESPN_EUROPA_STANDINGS)
     ]);
     const incoming = [], details = [];
     let useful = 0;
@@ -1224,6 +1284,10 @@ async function performOnlineRefresh() {
       details.push((i ? 'Calendário' : 'Resultados') + ': ' +
         (events.length ? events.length + ' jogos' : 'sem dados válidos') + '.');
     }
+    const europaAccepted = results[6]?.status === 'fulfilled' && applyEuropaTable(results[6].value);
+    europaTableLastCheckFailed = !europaAccepted;
+    details.push('Liga Europa: ' + (europaAccepted ? 'classificação de 36 equipas.' : 'classificação não atualizada.'));
+    if (europaAccepted) saveOnlineCache([], []);
     const rows = results[2].status === 'fulfilled' ? espnStandingsRows(results[2].value) : [];
     let cupChecked = false;
     for (const index of [4,5]) {
@@ -1248,7 +1312,7 @@ async function performOnlineRefresh() {
     updatePortugalCupState();
     if (accepted) leagueTableUpdatedAt = stamp;
     saveOnlineCache(incoming, accepted ? rows : [], stamp);
-    if (changed || accepted) {
+    if (changed || accepted || europaAccepted) {
       renderHero(); renderCompetitionCards();
       if (currentCompetition) openCompetition(currentCompetition, currentDetail, false);
     }
@@ -1259,7 +1323,7 @@ async function performOnlineRefresh() {
     details.push('ESPN: ' + leagueGames.length + '/34 jogos da Liga; ' + europeGames.length + ' jogos europeus.');
     const clock = new Intl.DateTimeFormat('pt-PT', {timeZone:DISPLAY_TIME_ZONE,
       day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}).format(new Date(stamp));
-    const fullCoverage = useful === 3 && cupChecked;
+    const fullCoverage = useful === 3 && cupChecked && europaAccepted;
     setOnlineStatus('ESPN · ' + (fullCoverage ? 'dados recebidos' : 'atualização parcial') + ' · ' + clock,
       fullCoverage ? 'updated' : 'partial', details.join(' '));
     const note = document.getElementById('dataCoverage');

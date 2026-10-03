@@ -1,0 +1,1454 @@
+{
+  "id": "2310",
+  "name": "UEFA Europa League",
+  "children": [
+    {
+      "name": "League Phase",
+      "standings": {
+        "season": 2026,
+        "entries": [
+          {
+            "team": {
+              "id": "111",
+              "displayName": "Juventus"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 0.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 5.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 1.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "384",
+              "displayName": "Crystal Palace"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 0.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 4.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 2.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "433",
+              "displayName": "Sparta Prague"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 1.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 4.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 3.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "1895",
+              "displayName": "Besiktas"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 1.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 4.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 4.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "5807",
+              "displayName": "Union St.-Gilloise"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 0.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 3.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 5.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "622",
+              "displayName": "Ferencvaros"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 1.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 3.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 6.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "1929",
+              "displayName": "Benfica"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 0.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 2.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 7.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "131",
+              "displayName": "Bayer Leverkusen"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 0.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 2.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 8.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "1010",
+              "displayName": "OFI Crete"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 0.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 2.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 9.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "349",
+              "displayName": "AFC Bournemouth"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 1.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 2.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 10.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "167",
+              "displayName": "Lyon"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 1.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 2.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 11.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "21615",
+              "displayName": "Torreense"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 1.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 2.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 12.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "435",
+              "displayName": "Olympiacos"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 1.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 2.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 13.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "2790",
+              "displayName": "RB Salzburg"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 0.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 1.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 14.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "617",
+              "displayName": "Omonia Nicosia"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 0.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 1.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 15.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "366",
+              "displayName": "Sunderland"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 3.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 0.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 1.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 1.0
+              },
+              {
+                "name": "rank",
+                "value": 16.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "597",
+              "displayName": "Dinamo Zagreb"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 1.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 0.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 0.0
+              },
+              {
+                "name": "ties",
+                "value": 1.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 17.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "13083",
+              "displayName": "Hapoel Be'er"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 1.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 0.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 0.0
+              },
+              {
+                "name": "ties",
+                "value": 1.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 18.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "169",
+              "displayName": "Stade Rennais"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 1.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 0.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 0.0
+              },
+              {
+                "name": "ties",
+                "value": 1.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 19.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "3746",
+              "displayName": "SK Sturm Graz"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 0.0
+              },
+              {
+                "name": "points",
+                "value": 1.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 0.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 0.0
+              },
+              {
+                "name": "ties",
+                "value": 1.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 20.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "11505",
+              "displayName": "Jagiellonia Bialystok"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 2.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 1.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 21.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "441",
+              "displayName": "Anderlecht"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 2.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 1.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 22.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "987",
+              "displayName": "Lillestrom"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 2.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 1.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 23.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "89",
+              "displayName": "Real Sociedad"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 2.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 1.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 24.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "140",
+              "displayName": "AZ Alkmaar"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 1.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 0.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 25.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "85",
+              "displayName": "Celta Vigo"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 1.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 0.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 26.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "490",
+              "displayName": "Levski Sofia"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 1.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 0.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 27.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "256",
+              "displayName": "Celtic"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 3.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 1.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 28.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "103",
+              "displayName": "AC Milan"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 2.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 0.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 29.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "3362",
+              "displayName": "NK Celje"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 2.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 0.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 30.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "7911",
+              "displayName": "TSG Hoffenheim"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 2.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 0.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 31.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "176",
+              "displayName": "Marseille"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 4.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 1.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 32.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "20024",
+              "displayName": "Ararat-Armenia"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 4.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 1.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 33.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "11706",
+              "displayName": "Viktoria Plzen"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 3.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 0.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 34.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "2990",
+              "displayName": "Lech Poznan"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 4.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 0.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 35.0
+              }
+            ]
+          },
+          {
+            "team": {
+              "id": "147",
+              "displayName": "NEC Nijmegen"
+            },
+            "stats": [
+              {
+                "name": "gamesPlayed",
+                "value": 1.0
+              },
+              {
+                "name": "losses",
+                "value": 1.0
+              },
+              {
+                "name": "points",
+                "value": 0.0
+              },
+              {
+                "name": "pointsAgainst",
+                "value": 5.0
+              },
+              {
+                "name": "pointsFor",
+                "value": 0.0
+              },
+              {
+                "name": "ties",
+                "value": 0.0
+              },
+              {
+                "name": "wins",
+                "value": 0.0
+              },
+              {
+                "name": "rank",
+                "value": 36.0
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

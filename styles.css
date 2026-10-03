@@ -753,3 +753,12 @@ footer .pjcore-credit { grid-column:2; justify-self:end; margin-left:0; }
   footer .goatcounter-box, footer .pjcore-credit, footer .footer-links { grid-column:1; }
   footer .goatcounter-box { justify-self:start; }
 }
+
+.europa-table-legend { display:flex; flex-wrap:wrap; gap:18px; color:var(--muted); font-size:12px; }
+.europa-rank { display:inline-grid; place-items:center; min-width:24px; border-radius:6px; padding:3px; }
+.europa-rank.direct { background:rgba(70,190,130,.18); color:#a0e2bc; }
+.europa-rank.playoff { background:rgba(235,180,65,.16); color:#efd297; }
+.europa-rank.out { color:#a6a0a5; }
+.europa-zone-end td { border-bottom:2px solid rgba(255,255,255,.22); }
+.europa-table-source { color:var(--muted); font-size:11px; }
+.europa-table-source a { color:#d69aa4; }
