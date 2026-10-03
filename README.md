@@ -16,9 +16,8 @@ Os dados-base foram verificados em 22/08/2026 em fontes oficiais do SL Benfica, 
 
 ## Atualização dos dados
 
-A página inicial está preparada para reabrir a aplicação. `index.html` e
-`benfica.html` apresentam a mesma interface. As alterações permanecem no ramo de
-preparação até à integração no ramo principal; a versão pública continua em manutenção.
+A aplicação foi reaberta em 03/10/2026 em https://pajogusi.github.io/benfica-match-center/.
+`index.html` e `benfica.html` apresentam a mesma interface. A publicação no GitHub Pages foi concluída e verificada no navegador.
 
 - Consulta ao abrir, botão “Atualizar dados”, nova consulta a cada cinco minutos enquanto a página está visível e ao regressar após esse intervalo.
 - Pedidos com limite de dez segundos, sem consultas concorrentes e com intervalo mínimo de trinta segundos.
@@ -31,7 +30,7 @@ preparação até à integração no ramo principal; a versão pública continua
 ### Fontes gratuitas
 
 - ESPN: calendário e resultados do Benfica em todas as competições que o fornecedor cobre, e classificação da Liga. A consulta real em 03/10/2026 devolveu os 34 jogos da Liga, 14 jogos europeus (incluindo pré-eliminatórias) e os 18 clubes da classificação. Os endpoints públicos responderam com CORS `*`, sem conta ou chave. Não constituem uma API contratada: podem mudar ou falhar.
-- [Liga Portugal](https://www.ligaportugal.pt/calendars-ics/sl_benfica.ics): calendário oficial ICS. Um coletor em Python, sem dependências, recolhe os jogos da Allianz Cup; GitHub Actions executa a cada seis horas e permite execução manual. Este agendamento só fica ativo depois de integrar a alteração no ramo principal. Num repositório público, este uso de Actions é gratuito.
+- [Liga Portugal](https://www.ligaportugal.pt/calendars-ics/sl_benfica.ics): calendário oficial ICS. Um coletor em Python, sem dependências, recolhe os jogos da Allianz Cup; GitHub Actions executa a cada seis horas e permite execução manual. O agendamento está ativo no ramo principal e a execução inicial foi concluída com sucesso. Num repositório público, este uso de Actions é gratuito.
 - O JSON oficial é consultado diretamente no ramo principal para não depender de um novo build de Pages após o commit automático. Há alternativa no ficheiro local. Dados com mais de 24 horas são rejeitados e o estado anterior é preservado.
 - TheSportsDB: alternativa se a ESPN não devolver dados utilizáveis; as limitações do plano gratuito são identificadas na aplicação.
 
@@ -54,16 +53,16 @@ node --test tests/*.test.cjs
 python3 -m unittest discover -s tests -p '*_test.py'
 ```
 
-Os testes incluem respostas reais reduzidas, recolhidas em 03/10/2026, além de falhas de rede, temporadas erradas, classificações incompletas, horários provisórios, cache e funcionamento offline. Consultas HTTP reais verificaram a cobertura e o cabeçalho CORS da ESPN; o fluxo no navegador continua por verificar antes da reabertura.
+Os testes incluem respostas reais reduzidas, recolhidas em 03/10/2026, além de falhas de rede, temporadas erradas, classificações incompletas, horários provisórios, cache e funcionamento offline. Consultas HTTP reais verificaram a cobertura e o cabeçalho CORS da ESPN; o fluxo no navegador público foi verificado após a reabertura, com dados ESPN recebidos, 18 clubes na classificação e o calendário oficial da Taça da Liga.
 
 ## Marcas e emblemas
 
 Projeto não oficial e sem afiliação com o SL Benfica, Liga Portugal, FPF ou UEFA. Os nomes, emblemas e logótipos pertencem aos respetivos titulares e são apresentados apenas para identificar clubes e competições.
 
-## Preparação da reabertura
+## Publicação
 
 O crédito PJCore Labs usa o símbolo original do repositório da marca (`website/img/pjcorelabs-symbol-clean.png`), copiado sem alterações para `icons/pjcorelabs.png`. Aparece pequeno no canto inferior direito do rodapé e aponta para pjcorelabs.com. O aviso de projeto independente e não oficial permanece separado do emblema do clube.
 
 A página inicial volta a apresentar a aplicação; a versão do service worker e as referências aos recursos são atualizadas juntas. A recolha oficial inicia automaticamente na integração do workflow no ramo principal e prossegue a cada seis horas. O contador GoatCounter é preservado; indisponibilidade de rede ou bloqueio de privacidade é identificada sem atribuir uma causa não confirmada.
 
-Os testes automatizados passam e os recursos locais foram verificados. A confirmação visual no navegador está pendente: o navegador de teste recusou abrir o servidor local (`ERR_BLOCKED_BY_CLIENT`). A publicação e a execução do workflow no GitHub ainda não foram realizadas nesta preparação.
+Os 36 testes automatizados passaram no GitHub Actions. A publicação no GitHub Pages e a recolha oficial passaram em 03/10/2026. A página pública foi verificada no navegador: dados recebidos, jogo Benfica–Gil Vicente em 29/10 às 20h45, contador a apresentar 34 visitas e símbolo PJCore Labs carregado a 40 × 40 px. Não foi observado transbordo horizontal na janela de teste.
