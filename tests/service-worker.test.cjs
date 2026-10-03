@@ -29,11 +29,11 @@ test('external API calls bypass the HTML offline fallback', () => {
   assert.equal(intercepted, false);
 });
 test('activation preserves caches belonging to other applications', async () => {
-  const {handlers, removed} = worker(null, null, ['pajo-home-v1','benfica-match-center-v27-portugal-time','benfica-match-center-v28-refresh-reliable']);
+  const {handlers, removed} = worker(null, null, ['pajo-home-v1','benfica-match-center-v27-portugal-time','benfica-match-center-v28-refresh-reliable','benfica-match-center-v29-free-sources']);
   let pending;
   handlers.activate({waitUntil:promise=>{pending=promise;}});
   await pending;
-  assert.deepEqual(removed, ['benfica-match-center-v27-portugal-time']);
+  assert.deepEqual(removed, ['benfica-match-center-v27-portugal-time','benfica-match-center-v28-refresh-reliable']);
 });
 test('offline PWA navigation opens benfica.html rather than the maintenance page', async () => {
   const page = new Response('application');
