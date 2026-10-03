@@ -499,10 +499,10 @@ function updateEuropaState() {
     return sum + (scored > conceded ? 3 : scored === conceded ? 1 : 0);
   }, 0);
   const europe = comp('europa');
-  europe.shortDetail = 'Fase de liga · ' + points + ' pontos em ' + finished.length + ' jogos';
+  europe.shortDetail = 'Fase de liga · ' + points + ' pontos em ' + finished.length + (finished.length === 1 ? ' jogo' : ' jogos');
   europe.statusTitle = 'Fase de liga em curso';
-  europe.statusText = 'O Benfica tem ' + points + ' pontos nos ' + finished.length +
-    ' jogos concluídos da fase de liga. Consulta o calendário para ver resultados e próximos adversários.';
+  europe.statusText = 'O Benfica tem ' + points + ' pontos em ' + finished.length +
+    (finished.length === 1 ? ' jogo concluído' : ' jogos concluídos') + ' da fase de liga. Consulta o calendário para ver resultados e próximos adversários.';
 }
 
 function renderCompetitionCards() {
