@@ -372,6 +372,7 @@ function countdown(m) {
 }
 
 function renderHero() {
+  expireLiveEvidence();
   const m = upcomingMatches()[0];
   const root = $('#nextMatchHero');
 
@@ -1057,6 +1058,16 @@ function refreshOnlineData() {
 }
 
 
+function expireLiveEvidence() {
+  let changed = false;
+  for (const match of matches) {
+    if (match.status === 'LIVE' && (!Number.isFinite(match.observedAt) || Date.now() - match.observedAt > 2 * ONLINE_REFRESH_MS)) {
+      match.status = 'NS'; delete match.livePhase; changed = true;
+    }
+  }
+  if (changed && currentCompetition) renderDetail();
+}
+
 function officialCalendarMatches(data) {
   const stamp = new Date(data?.fetchedAt).getTime();
   if (data?.season !== SPORTSDB_SEASON || !freshCacheStamp(stamp) || !Array.isArray(data.matches)) return [];
@@ -1206,7 +1217,10 @@ async function performSportsDbRefresh() {
     const changedMatches = mergeOnlineMatches(incoming);
     const tableResult = results[2];
     const rows = tableResult.status === 'fulfilled' ? (tableResult.value.table || tableResult.value.tables) : null;
+    const priorSource = leagueTableSource;
+    leagueTableSource = 'TheSportsDB';
     const acceptedTable = applyOnlineLeagueTable(rows);
+    if (!acceptedTable) leagueTableSource = priorSource;
     const stamp = Date.now();
     if (acceptedTable) {
       useful++;
