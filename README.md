@@ -34,6 +34,8 @@ A aplicação foi reaberta em 03/10/2026 em https://pajogusi.github.io/benfica-m
 - O JSON oficial é consultado diretamente no ramo principal para não depender de um novo build de Pages após o commit automático. Há alternativa no ficheiro local. Dados com mais de 24 horas são rejeitados e o estado anterior é preservado.
 - TheSportsDB: alternativa se a ESPN não devolver dados utilizáveis; as limitações do plano gratuito são identificadas na aplicação.
 
+A classificação completa da Liga Europa usa a ESPN e exige 36 equipas, posições únicas, Benfica presente e época correta. Inclui jogos, vitórias, empates, derrotas, golos e pontos, com destaque para o Benfica e zonas de apuramento. Atualiza a cada cinco minutos e preserva a última tabela válida até 24 horas se a consulta falhar.
+
 Cobertura ainda por validar: resultados da Taça da Liga e estados de qualificação das restantes competições. O calendário oficial não contém resultados: nunca se deduz um resultado a partir do horário. A recolha é periódica; não há garantia de resultados em direto nem disponibilidade contínua dos fornecedores.
 
 Horários provisórios da ESPN (`timeValid=false`) são apresentados como hora por confirmar. Datas e horários oficiais da Taça da Liga substituem os dados de base; Benfica–Gil Vicente foi corrigido de 27 para 29/10/2026, às 20h45 de Portugal.
@@ -65,4 +67,4 @@ O crédito PJCore Labs usa o símbolo original do repositório da marca (`websit
 
 A página inicial volta a apresentar a aplicação; a versão do service worker e as referências aos recursos são atualizadas juntas. A recolha oficial inicia automaticamente na integração do workflow no ramo principal e prossegue a cada seis horas. O contador GoatCounter é preservado; indisponibilidade de rede ou bloqueio de privacidade é identificada sem atribuir uma causa não confirmada.
 
-Os 36 testes automatizados passaram no GitHub Actions. A publicação no GitHub Pages e a recolha oficial passaram em 03/10/2026. A página pública foi verificada no navegador: dados recebidos, jogo Benfica–Gil Vicente em 29/10 às 20h45, contador a apresentar 34 visitas e símbolo PJCore Labs carregado a 40 × 40 px. Não foi observado transbordo horizontal na janela de teste.
+Os 40 testes automatizados passaram no GitHub Actions. A publicação no GitHub Pages e a recolha oficial passaram em 03/10/2026. A página pública foi verificada no navegador: dados recebidos, jogo Benfica–Gil Vicente em 29/10 às 20h45, contador a apresentar 34 visitas e símbolo PJCore Labs carregado a 40 × 40 px. Não foi observado transbordo horizontal na janela de teste.
