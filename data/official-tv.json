@@ -1,19 +1,8 @@
 {
   "season": "2026-2027",
-  "fetchedAt": "2026-10-11T13:27:11.388625+00:00",
+  "fetchedAt": "2026-10-11T22:24:58.373656+00:00",
   "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario",
   "matches": [
-    {
-      "id": "sr:match:72530962",
-      "date": "2026-10-11",
-      "home": "SL Benfica",
-      "away": "Vitória SC",
-      "channels": [
-        "BTV"
-      ],
-      "source": "SL Benfica",
-      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
-    },
     {
       "id": "sr:match:74172980",
       "date": "2026-10-15",
@@ -107,6 +96,17 @@
       "away": "FC Famalicão",
       "channels": [
         "BTV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:72531046",
+      "date": "2026-12-06",
+      "home": "CD Nacional",
+      "away": "SL Benfica",
+      "channels": [
+        "SPORT TV"
       ],
       "source": "SL Benfica",
       "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
