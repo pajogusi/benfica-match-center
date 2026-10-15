@@ -1,19 +1,8 @@
 {
   "season": "2026-2027",
-  "fetchedAt": "2026-10-15T17:18:55.102103+00:00",
+  "fetchedAt": "2026-10-15T21:43:17.406427+00:00",
   "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario",
   "matches": [
-    {
-      "id": "sr:match:74172980",
-      "date": "2026-10-15",
-      "home": "SL Benfica",
-      "away": "Celtic Glasgow",
-      "channels": [
-        "SPORT TV"
-      ],
-      "source": "SL Benfica",
-      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
-    },
     {
       "id": "sr:match:74173018",
       "date": "2026-10-22",
@@ -105,6 +94,17 @@
       "date": "2026-12-06",
       "home": "CD Nacional",
       "away": "SL Benfica",
+      "channels": [
+        "SPORT TV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:74173130",
+      "date": "2026-12-10",
+      "home": "SL Benfica",
+      "away": "OFI Crete FC",
       "channels": [
         "SPORT TV"
       ],
