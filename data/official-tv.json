@@ -1,19 +1,8 @@
 {
   "season": "2026-2027",
-  "fetchedAt": "2026-10-22T17:35:04.510057+00:00",
+  "fetchedAt": "2026-10-22T21:53:49.558800+00:00",
   "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario",
   "matches": [
-    {
-      "id": "sr:match:74173018",
-      "date": "2026-10-22",
-      "home": "Omonia FC",
-      "away": "SL Benfica",
-      "channels": [
-        "SPORT TV"
-      ],
-      "source": "SL Benfica",
-      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
-    },
     {
       "id": "sr:match:72530976",
       "date": "2026-10-26",
@@ -107,6 +96,17 @@
       "away": "OFI Crete FC",
       "channels": [
         "SPORT TV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:72531068",
+      "date": "2026-12-13",
+      "home": "SL Benfica",
+      "away": "SC Braga",
+      "channels": [
+        "BTV"
       ],
       "source": "SL Benfica",
       "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
