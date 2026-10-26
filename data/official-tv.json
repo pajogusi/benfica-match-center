@@ -1,19 +1,8 @@
 {
   "season": "2026-2027",
-  "fetchedAt": "2026-10-26T13:29:39.299137+00:00",
+  "fetchedAt": "2026-10-26T22:51:05.140409+00:00",
   "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario",
   "matches": [
-    {
-      "id": "sr:match:72530976",
-      "date": "2026-10-26",
-      "home": "Santa Clara",
-      "away": "SL Benfica",
-      "channels": [
-        "SPORTTV1"
-      ],
-      "source": "SL Benfica",
-      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
-    },
     {
       "id": "sr:match:72708164",
       "date": "2026-10-29",
@@ -107,6 +96,17 @@
       "away": "SC Braga",
       "channels": [
         "BTV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:72531084",
+      "date": "2026-12-20",
+      "home": "Rio Ave FC",
+      "away": "SL Benfica",
+      "channels": [
+        "SPORT TV"
       ],
       "source": "SL Benfica",
       "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
