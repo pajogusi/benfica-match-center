@@ -1,17 +1,8 @@
 {
   "season": "2026-2027",
-  "fetchedAt": "2026-10-29T13:39:19.233755+00:00",
+  "fetchedAt": "2026-10-29T22:56:24.044290+00:00",
   "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario",
   "matches": [
-    {
-      "id": "sr:match:72708164",
-      "date": "2026-10-29",
-      "home": "SL Benfica",
-      "away": "Gil Vicente FC",
-      "channels": [],
-      "source": "SL Benfica",
-      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
-    },
     {
       "id": "sr:match:72530998",
       "date": "2026-11-02",
@@ -107,6 +98,17 @@
       "away": "SL Benfica",
       "channels": [
         "SPORT TV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:72531104",
+      "date": "2026-12-27",
+      "home": "SL Benfica",
+      "away": "Sporting CP",
+      "channels": [
+        "BTV"
       ],
       "source": "SL Benfica",
       "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
