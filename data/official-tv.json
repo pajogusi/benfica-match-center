@@ -1,6 +1,6 @@
 {
   "season": "2026-2027",
-  "fetchedAt": "2026-10-30T06:22:26.120534+00:00",
+  "fetchedAt": "2026-10-30T13:28:33.137044+00:00",
   "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario",
   "matches": [
     {
@@ -20,7 +20,7 @@
       "home": "SL Benfica",
       "away": "KKS Lech Poznan",
       "channels": [
-        "SPORT TV"
+        "SPORTTV5"
       ],
       "source": "SL Benfica",
       "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
@@ -31,7 +31,7 @@
       "home": "CF Estrela Amadora",
       "away": "SL Benfica",
       "channels": [
-        "SPORT TV"
+        "SPORTTV2"
       ],
       "source": "SL Benfica",
       "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
