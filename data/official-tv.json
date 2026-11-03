@@ -1,6 +1,6 @@
 {
   "season": "2026-2027",
-  "fetchedAt": "2026-11-03T07:11:49.419164+00:00",
+  "fetchedAt": "2026-11-03T19:45:49.521969+00:00",
   "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario",
   "matches": [
     {
@@ -49,7 +49,7 @@
     },
     {
       "id": "sr:match:72531046",
-      "date": "2026-12-06",
+      "date": "2026-12-05",
       "home": "CD Nacional",
       "away": "SL Benfica",
       "channels": [
@@ -71,7 +71,7 @@
     },
     {
       "id": "sr:match:72531068",
-      "date": "2026-12-13",
+      "date": "2026-12-14",
       "home": "SL Benfica",
       "away": "SC Braga",
       "channels": [
