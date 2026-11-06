@@ -1,19 +1,8 @@
 {
   "season": "2026-2027",
-  "fetchedAt": "2026-11-05T20:14:46.215788+00:00",
+  "fetchedAt": "2026-11-06T07:20:07.866688+00:00",
   "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario",
   "matches": [
-    {
-      "id": "sr:match:74173056",
-      "date": "2026-11-05",
-      "home": "SL Benfica",
-      "away": "KKS Lech Poznan",
-      "channels": [
-        "SPORTTV5"
-      ],
-      "source": "SL Benfica",
-      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
-    },
     {
       "id": "sr:match:72531002",
       "date": "2026-11-08",
@@ -106,6 +95,17 @@
       "id": "sr:match:76201376",
       "date": "2027-01-05",
       "home": "FC Porto",
+      "away": "SL Benfica",
+      "channels": [
+        "SPORT TV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:72531114",
+      "date": "2027-01-10",
+      "home": "FC Arouca",
       "away": "SL Benfica",
       "channels": [
         "SPORT TV"
