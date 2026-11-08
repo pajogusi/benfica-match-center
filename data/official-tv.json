@@ -1,19 +1,8 @@
 {
   "season": "2026-2027",
-  "fetchedAt": "2026-11-08T18:03:30.971301+00:00",
+  "fetchedAt": "2026-11-08T22:26:20.582566+00:00",
   "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario",
   "matches": [
-    {
-      "id": "sr:match:72531002",
-      "date": "2026-11-08",
-      "home": "CF Estrela Amadora",
-      "away": "SL Benfica",
-      "channels": [
-        "SPORTTV2"
-      ],
-      "source": "SL Benfica",
-      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
-    },
     {
       "id": "sr:match:74173064",
       "date": "2026-11-26",
@@ -106,6 +95,17 @@
       "id": "sr:match:72531114",
       "date": "2027-01-10",
       "home": "FC Arouca",
+      "away": "SL Benfica",
+      "channels": [
+        "SPORT TV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:72531128",
+      "date": "2027-01-17",
+      "home": "Académico Viseu FC",
       "away": "SL Benfica",
       "channels": [
         "SPORT TV"
