@@ -1,6 +1,6 @@
 {
   "season": "2026-2027",
-  "fetchedAt": "2026-11-17T08:25:53.781629+00:00",
+  "fetchedAt": "2026-11-17T21:17:29.218217+00:00",
   "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario",
   "matches": [
     {
@@ -9,7 +9,7 @@
       "home": "Viktoria Plzen",
       "away": "SL Benfica",
       "channels": [
-        "SPORT TV"
+        "SPORTTV5"
       ],
       "source": "SL Benfica",
       "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
