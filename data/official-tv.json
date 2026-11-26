@@ -1,19 +1,8 @@
 {
   "season": "2026-2027",
-  "fetchedAt": "2026-11-26T08:51:11.949002+00:00",
+  "fetchedAt": "2026-11-26T21:53:15.931214+00:00",
   "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario",
   "matches": [
-    {
-      "id": "sr:match:74173064",
-      "date": "2026-11-26",
-      "home": "Viktoria Plzen",
-      "away": "SL Benfica",
-      "channels": [
-        "SPORTTV5"
-      ],
-      "source": "SL Benfica",
-      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
-    },
     {
       "id": "sr:match:72531032",
       "date": "2026-11-30",
@@ -60,7 +49,7 @@
     },
     {
       "id": "sr:match:72531084",
-      "date": "2026-12-20",
+      "date": "2026-12-21",
       "home": "Rio Ave FC",
       "away": "SL Benfica",
       "channels": [
@@ -71,7 +60,7 @@
     },
     {
       "id": "sr:match:72531104",
-      "date": "2026-12-27",
+      "date": "2026-12-29",
       "home": "SL Benfica",
       "away": "Sporting CP",
       "channels": [
@@ -106,6 +95,17 @@
       "id": "sr:match:72531128",
       "date": "2027-01-17",
       "home": "Académico Viseu FC",
+      "away": "SL Benfica",
+      "channels": [
+        "SPORT TV"
+      ],
+      "source": "SL Benfica",
+      "sourceUrl": "https://www.slbenfica.pt/pt-pt/futebol/calendario"
+    },
+    {
+      "id": "sr:match:74173146",
+      "date": "2027-01-21",
+      "home": "NEC Nijmegen",
       "away": "SL Benfica",
       "channels": [
         "SPORT TV"
